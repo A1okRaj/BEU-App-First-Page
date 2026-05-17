@@ -1,0 +1,592 @@
+// ================================================================
+//  BEU CONNECT — Complete React Native + Expo Conversion
+//  From: React.js Web App → React Native Mobile App
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── package.json
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── components/
+//  │   │   ├── Header.js
+//  │   │   ├── Ticker.js
+//  │   │   ├── BottomNav.js
+//  │   │   ├── SectionHeader.js
+//  │   │   ├── HeroCard.js
+//  │   │   ├── ProgressRings.js
+//  │   │   ├── CountdownCard.js
+//  │   │   ├── StudyStreak.js
+//  │   │   ├── AICard.js
+//  │   │   ├── FeatureTiles.js
+//  │   │   ├── ExamCards.js
+//  │   │   ├── QuizWidget.js
+//  │   │   ├── Leaderboard.js
+//  │   │   ├── ConnectSection.js
+//  │   │   ├── ReviewsSection.js
+//  │   │   ├── PromiseSection.js
+//  │   │   └── AIModal.js
+//  │   └── screens/
+//  │       └── HomeScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: package.json
+// ================================================================
+/*
+{
+  "name": "beu-connect",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-status-bar": "~1.12.1",
+    "expo-linear-gradient": "~13.0.2",
+    "react": "18.2.0",
+    "react-native": "0.74.1",
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/bottom-tabs": "^6.5.20",
+    "react-native-safe-area-context": "4.10.1",
+    "react-native-screens": "3.31.1",
+    "react-native-svg": "15.2.0",
+    "@expo/vector-icons": "^14.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0"
+  }
+}
+*/
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  t4:      'rgba(245,240,255,0.1)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  or2:     '#FF6B1A',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  blue:    '#60A5FA',
+  red:     '#F87171',
+};
+
+
+
+
+// ================================================================
+// FILE: App.js
+// ================================================================
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet } from 'react-native';
+import HomeScreen from './src/screens/HomeScreen';
+import { C } from './src/theme/colors';
+
+const Tab = createBottomTabNavigator();
+
+function PlaceholderScreen({ label }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: C.bg, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ color: C.t2, fontSize: 16 }}>{label}</Text>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <StatusBar style="light" backgroundColor={C.bg} />
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarStyle: styles.tabBar,
+            tabBarBackground: () => <View style={styles.tabBg} />,
+            tabBarActiveTintColor: C.p,
+            tabBarInactiveTintColor: C.t3,
+            tabBarLabelStyle: styles.tabLabel,
+            tabBarIcon: ({ focused }) => {
+              const icons = {
+                Home: '🏠', GATE: '⚙️', Results: '📊',
+                Extras: '⚡', Profile: '👤',
+              };
+              return (
+                <View style={[styles.tabIconWrap, focused && styles.tabIconWrapOn]}>
+                  <Text style={styles.tabIcon}>{icons[route.name]}</Text>
+                </View>
+              );
+            },
+          })}
+        >
+          <Tab.Screen name="Home"    component={HomeScreen} />
+          <Tab.Screen name="GATE"    children={() => <PlaceholderScreen label="GATE 2026" />} />
+          <Tab.Screen name="Results" children={() => <PlaceholderScreen label="Results" />} />
+          <Tab.Screen name="Extras"  children={() => <PlaceholderScreen label="Extras" />} />
+          <Tab.Screen name="Profile" children={() => <PlaceholderScreen label="Profile" />} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabBar: {
+    position: 'absolute', bottom: 16, left: 14, right: 14,
+    borderRadius: 22, height: 66, borderTopWidth: 0,
+    elevation: 0, shadowOpacity: 0,
+    borderWidth: 1, borderColor: C.border2,
+    backgroundColor: 'transparent',
+  },
+  tabBg: {
+    flex: 1, borderRadius: 22,
+    backgroundColor: 'rgba(15,12,26,0.97)',
+  },
+  tabIcon: { fontSize: 20 },
+  tabIconWrap: {
+    alignItems: 'center', justifyContent: 'center',
+    width: 38, height: 38, borderRadius: 12,
+  },
+  tabIconWrapOn: { backgroundColor: 'rgba(139,92,246,0.12)' },
+  tabLabel: { fontSize: 9, fontWeight: '600', marginBottom: 4 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js  (already shown above)
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: src/components/Header.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import {
+  View, Text, TouchableOpacity, StyleSheet, Animated,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { C } from '../theme/colors';
+
+export default function Header({ onNotif, onAI }) {
+  const insets = useSafeAreaInsets();
+  const pulse = useRef(new Animated.Value(1)).current;
+  const shimmer = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 0.4, duration: 800, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1,   duration: 800, useNativeDriver: true }),
+      ])
+    ).start();
+    Animated.loop(
+      Animated.timing(shimmer, { toValue: 1, duration: 3000, useNativeDriver: false })
+    ).start();
+  }, []);
+
+  return (
+    <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      {/* LOGO */}
+      <View style={styles.logoArea}>
+        <LinearGradient colors={['#7C3AED', '#A78BFA']} style={styles.logoGem}>
+          <Text style={styles.logoGemText}>🎓</Text>
+        </LinearGradient>
+        <View>
+          <Text style={styles.logoName}>BEU Connect</Text>
+          <Text style={styles.logoTag}>BIHAR ENGINEERING UNIVERSITY</Text>
+        </View>
+      </View>
+
+      {/* ACTIONS */}
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.actionBtn} onPress={onNotif} activeOpacity={0.75}>
+          <Text style={{ fontSize: 16 }}>🔔</Text>
+          <Animated.View style={[styles.dot, { opacity: pulse }]} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionBtn} onPress={onAI} activeOpacity={0.75}>
+          <Text style={{ fontSize: 16 }}>🤖</Text>
+        </TouchableOpacity>
+        <LinearGradient colors={['#7C3AED', '#FF8C42']} style={styles.avatar}>
+          <Text style={styles.avatarText}>AR</Text>
+        </LinearGradient>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 16, paddingBottom: 12,
+    backgroundColor: 'rgba(10,8,18,0.9)',
+    borderBottomWidth: 1, borderBottomColor: C.border,
+  },
+  logoArea: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  logoGem: {
+    width: 38, height: 38, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#7C3AED', shadowOpacity: 0.6, shadowRadius: 12, elevation: 8,
+  },
+  logoGemText: { fontSize: 18 },
+  logoName: { fontSize: 17, fontWeight: '800', color: C.p },
+  logoTag: { fontSize: 8, color: C.t3, letterSpacing: 1.2, marginTop: 1 },
+  actions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  actionBtn: {
+    width: 36, height: 36, borderRadius: 10,
+    backgroundColor: C.card2, borderWidth: 1, borderColor: C.border2,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  dot: {
+    position: 'absolute', top: 6, right: 6,
+    width: 8, height: 8, borderRadius: 4,
+    backgroundColor: C.or, borderWidth: 1.5, borderColor: C.bg,
+  },
+  avatar: {
+    width: 36, height: 36, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1.5, borderColor: 'rgba(167,139,250,0.35)',
+  },
+  avatarText: { fontSize: 12, fontWeight: '800', color: '#fff' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/Ticker.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, Animated, StyleSheet, Easing } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+const ITEMS = [
+  '📢 GATE 2026 Registration Open — Apply Now',
+  '🎯 End Semester Exams: Dec 2025',
+  '📊 BEU Result Declared — Check Now',
+  '🏆 TechBEU Annual Fest: Jan 2026',
+  '💼 Campus Placements Drive — Register',
+  '📋 Practical Exam Schedule Released',
+];
+
+export default function Ticker() {
+  const anim = useRef(new Animated.Value(0)).current;
+  const TEXT = ITEMS.join('   •   ') + '   •   ' + ITEMS.join('   •   ');
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(anim, {
+        toValue: -1, duration: 26000,
+        easing: Easing.linear, useNativeDriver: true,
+      })
+    ).start();
+  }, []);
+
+  return (
+    <LinearGradient colors={['#7C3AED', '#6D28D9']} style={styles.wrap}>
+      <Animated.View
+        style={{
+          flexDirection: 'row',
+          transform: [{
+            translateX: anim.interpolate({
+              inputRange: [-1, 0], outputRange: [-800, 0],
+            }),
+          }],
+        }}
+      >
+        <Text style={styles.text}>{TEXT}</Text>
+      </Animated.View>
+    </LinearGradient>
+  );
+}
+
+const styles = StyleSheet.create({
+  wrap: { paddingVertical: 8, overflow: 'hidden' },
+  text: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', paddingHorizontal: 16 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/HeroCard.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+const METRICS = [
+  { val: '7.8', lbl: 'CGPA',    color: C.p   },
+  { val: '23',  lbl: 'Streak',  color: C.or  },
+  { val: '340', lbl: 'Points',  color: C.teal },
+  { val: '#12', lbl: 'Rank',    color: C.gold },
+];
+
+const TAGS = ['3rd Sem', 'CSE', 'GATE 2026', 'Roll: 22CS045'];
+
+export default function HeroCard() {
+  return (
+    <View style={styles.card}>
+      {/* Glows */}
+      <View style={styles.glow1} />
+      <View style={styles.glow2} />
+
+      {/* Top Row */}
+      <View style={styles.topRow}>
+        <View>
+          <Text style={styles.greeting}>नमस्ते, Good Morning 👋</Text>
+          <Text style={styles.name}>Alok Raj</Text>
+          <Text style={styles.college}>Bakhtiyarpur College of Engineering</Text>
+        </View>
+        <View style={styles.badge}>
+          <Text style={[styles.badgeVal, { color: C.p }]}>7.8</Text>
+          <Text style={styles.badgeLbl}>CGPA</Text>
+        </View>
+      </View>
+
+      {/* Tags */}
+      <View style={styles.tagsRow}>
+        {TAGS.map((t, i) => (
+          <View key={i} style={[styles.tag, i === 0 && styles.tagActive]}>
+            <Text style={[styles.tagText, i === 0 && styles.tagTextActive]}>{t}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Metrics */}
+      <View style={styles.metricsRow}>
+        {METRICS.map((m, i) => (
+          <View key={i} style={styles.metric}>
+            <Text style={[styles.metricVal, { color: m.color }]}>{m.val}</Text>
+            <Text style={styles.metricLbl}>{m.lbl}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: C.card, borderRadius: 24,
+    borderWidth: 1, borderColor: C.border,
+    padding: 20, marginBottom: 14, overflow: 'hidden',
+  },
+  glow1: {
+    position: 'absolute', top: -60, right: -60,
+    width: 180, height: 180, borderRadius: 90,
+    backgroundColor: 'rgba(124,58,237,0.18)',
+  },
+  glow2: {
+    position: 'absolute', bottom: -40, left: -40,
+    width: 140, height: 140, borderRadius: 70,
+    backgroundColor: 'rgba(255,140,66,0.12)',
+  },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 },
+  greeting: { fontSize: 11, color: C.t3, letterSpacing: 0.5, marginBottom: 3 },
+  name: { fontSize: 26, fontWeight: '800', color: C.t1 },
+  college: { fontSize: 11, color: C.t2, marginTop: 3 },
+  badge: {
+    backgroundColor: 'rgba(139,92,246,0.15)',
+    borderWidth: 1, borderColor: 'rgba(167,139,250,0.3)',
+    borderRadius: 14, padding: 10, alignItems: 'center', minWidth: 68,
+  },
+  badgeVal: { fontSize: 22, fontWeight: '800' },
+  badgeLbl: { fontSize: 9, color: C.t3, marginTop: 2 },
+  tagsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 14 },
+  tag: {
+    backgroundColor: C.card2, borderWidth: 1, borderColor: C.border2,
+    borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4,
+  },
+  tagActive: {
+    backgroundColor: 'rgba(167,139,250,0.15)',
+    borderColor: 'rgba(167,139,250,0.35)',
+  },
+  tagText: { fontSize: 11, color: C.t2, fontWeight: '500' },
+  tagTextActive: { color: C.p },
+  metricsRow: { flexDirection: 'row', gap: 8 },
+  metric: {
+    flex: 1, backgroundColor: C.card2, borderRadius: 12,
+    paddingVertical: 10, alignItems: 'center',
+    borderWidth: 1, borderColor: C.border,
+  },
+  metricVal: { fontSize: 17, fontWeight: '700' },
+  metricLbl: { fontSize: 9, color: C.t3, marginTop: 2 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ProgressRings.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import { C } from '../theme/colors';
+
+const RINGS = [
+  { title: 'DSA Progress', sub: 'Striver A2Z', pct: 42, color: C.p,    status: 'On Track',  sBg: 'rgba(167,139,250,0.12)', sColor: C.p   },
+  { title: 'LeetCode',     sub: '87 solved',   pct: 29, color: C.teal,  status: 'Good',      sBg: 'rgba(45,212,191,0.1)',   sColor: C.teal },
+  { title: 'Attendance',   sub: 'This Sem',    pct: 78, color: C.green, status: 'Safe',      sBg: 'rgba(52,211,153,0.1)',   sColor: C.green },
+  { title: 'GATE Prep',    sub: 'Syllabus',    pct: 18, color: C.or,   status: 'Start Now', sBg: 'rgba(255,140,66,0.1)',   sColor: C.or  },
+];
+
+function Ring({ pct, color, size = 58 }) {
+  const r = (size - 10) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  return (
+    <View style={{ width: size, height: size }}>
+      <Svg width={size} height={size}>
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.06)" strokeWidth={6} fill="none" />
+        <Circle
+          cx={size / 2} cy={size / 2} r={r}
+          stroke={color} strokeWidth={6} fill="none"
+          strokeDasharray={`${dash} ${circ - dash}`}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </Svg>
+      <View style={StyleSheet.absoluteFill}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 12, fontWeight: '700', color }}>{pct}%</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export default function ProgressRings() {
+  return (
+    <View style={styles.grid}>
+      {RINGS.map((r, i) => (
+        <TouchableOpacity key={i} style={styles.card} activeOpacity={0.8}>
+          <Ring pct={r.pct} color={r.color} />
+          <View style={styles.info}>
+            <Text style={styles.title}>{r.title}</Text>
+            <Text style={styles.sub}>{r.sub}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: r.sBg }]}>
+              <Text style={[styles.statusText, { color: r.sColor }]}>{r.status}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
+  card: {
+    width: '47.5%', backgroundColor: C.card,
+    borderRadius: 20, borderWidth: 1, borderColor: C.border,
+    padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12,
+  },
+  info: { flex: 1 },
+  title: { fontSize: 12, fontWeight: '600', color: C.t1, marginBottom: 2 },
+  sub: { fontSize: 10, color: C.t3, marginBottom: 6 },
+  statusBadge: { borderRadius: 20, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start' },
+  statusText: { fontSize: 9, fontWeight: '600' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/CountdownCard.js
+// ================================================================
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+function getCountdown(targetDate) {
+  const now = new Date();
+  const diff = targetDate - now;
+  if (diff <= 0) return { days: 0, hours: 0, mins: 0, secs: 0 };
+  return {
+    days:  Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    mins:  Math.floor((diff % 3600000) / 60000),
+    secs:  Math.floor((diff % 60000) / 1000),
+  };
+}
+
+const EXAMS = [
+  { name: 'GATE 2026', date: new Date('2026-02-01T09:00:00'), sub: 'Computer Science' },
+  { name: 'End Sem',   date: new Date('2025-12-01T09:00:00'), sub: 'BEU Semester Exam' },
+];
+
+export default function CountdownCard() {
+  const [idx, setIdx] = useState(0);
+  const exam = EXAMS[idx];
+  const [cd, setCd] = useState(getCountdown(exam.date));
+
+  useEffect(() => {
+    const t = setInterval(() => setCd(getCountdown(exam.date)), 1000);
+    return () => clearInterval(t);
+  }, [idx]);
+
+  const blocks = [
+    { n: cd.days,  u: 'DAYS'  },
+    { n: cd.hours, u: 'HRS'   },
+    { n: cd.mins,  u: 'MINS'  },
+    { n: cd.secs,  u: 'SECS'  },
+  ];
+
+  return (
+    <LinearGradient
+      colors={['rgba(124,58,237,0.2)', 'rgba(255,140,66,0.12)']}
+      style={styles.card}
+    >
+      <View style={styles.topBorder} />
+      <View style={styles.topRow}>
+        <View>
+          <Text style={styles.eyebrow}>UPCOMING EXAM</Text>
+          <Text style={styles.examName}>{exam.name}</Text>
+          <Text style={styles.examSub}>{exam.sub}</Text>
+        </View>
+        <View style={styles.livePill}>
+          <View style={styles.liveDot} />
+          <Text style={styles.liveText}>LIVE</Text>
+        </View>
+      </View>
+      <View style={styles.blocksRow}>
+        {blocks.map((b, i) => (
+          <View key={i} style={styles.b
