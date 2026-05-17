@@ -1,0 +1,536 @@
+// ================================================================
+//  BEU ATTENDANCE TRACKER — React Native + Expo Conversion
+//  From: React.js Web App → React Native Mobile App
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── package.json
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── utils/
+//  │   │   └── attendance.js
+//  │   ├── components/
+//  │   │   ├── OverallCard.js
+//  │   │   ├── BunkCalculator.js
+//  │   │   ├── SubjectCard.js
+//  │   │   ├── AddSubjectModal.js
+//  │   │   ├── CalendarCard.js
+//  │   │   ├── WeeklyChart.js
+//  │   │   ├── SectionHeader.js
+//  │   │   ├── ToastMessage.js
+//  │   │   └── BottomNav.js
+//  │   └── screens/
+//  │       └── AttendanceScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: package.json
+// ================================================================
+/*
+{
+  "name": "beu-attendance",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-status-bar": "~1.12.1",
+    "expo-linear-gradient": "~13.0.2",
+    "react": "18.2.0",
+    "react-native": "0.74.1",
+    "react-native-safe-area-context": "4.10.1",
+    "react-native-screens": "3.31.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0"
+  }
+}
+*/
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  red:     '#F87171',
+  blue:    '#60A5FA',
+};
+
+export const SUBJECT_ICONS  = ['📐','📊','⚡','💻','🔬','🧮','📡','🔧','🎯','📝'];
+export const SUBJECT_COLORS = ['#A78BFA','#FF8C42','#2DD4BF','#F472B6','#34D399','#F59E0B','#60A5FA','#FB923C'];
+
+export const MONTHS = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
+
+
+
+
+// ================================================================
+// FILE: src/utils/attendance.js
+// ================================================================
+export function getStatus(pct) {
+  if (pct >= 90) return { text: 'Excellent 🌟', color: '#34D399' };
+  if (pct >= 75) return { text: 'Safe ✓',       color: '#34D399' };
+  if (pct >= 65) return { text: 'Warning ⚠',    color: '#F59E0B' };
+  return           { text: 'Danger ✗',          color: '#F87171' };
+}
+
+export function getBunkInfo(present, total, minPct = 75) {
+  const pct      = total > 0 ? (present / total) * 100 : 0;
+  const needed   = Math.ceil((minPct * total - 100 * present) / (100 - minPct));
+  const canBunk  = Math.floor((100 * present - minPct * total) / minPct);
+  return { canBunk: Math.max(0, canBunk), needed: Math.max(0, needed), pct };
+}
+
+export const INITIAL_SUBJECTS = [
+  { id: 1, name: 'Mathematics',       code: 'BEU-MA-301', icon: '🧮', color: '#A78BFA', present: 28, total: 35 },
+  { id: 2, name: 'Data Structures',   code: 'BEU-CS-302', icon: '💻', color: '#2DD4BF', present: 30, total: 36 },
+  { id: 3, name: 'Digital Elec.',     code: 'BEU-EC-303', icon: '⚡', color: '#F59E0B', present: 22, total: 34 },
+  { id: 4, name: 'Fluid Mechanics',   code: 'BEU-ME-304', icon: '🔬', color: '#F472B6', present: 25, total: 32 },
+];
+
+export const SAMPLE_CAL = {
+  '2026-04-01':'present','2026-04-02':'present','2026-04-03':'holiday',
+  '2026-04-05':'present','2026-04-07':'present','2026-04-08':'absent',
+  '2026-04-09':'present','2026-04-10':'present','2026-04-12':'present',
+  '2026-04-14':'holiday','2026-04-15':'present','2026-04-16':'present',
+  '2026-04-17':'absent', '2026-04-18':'present','2026-04-19':'present',
+};
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  left:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  bar:   { width: 4, height: 18, borderRadius: 2 },
+  title: { fontSize: 15, fontWeight: '700', color: C.t1 },
+  right: { fontSize: 11, color: C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity,     { toValue: 1, duration: 250, useNativeDriver: true }),
+      Animated.timing(translateY,  { toValue: 0, duration: 250, useNativeDriver: true }),
+    ]).start();
+  }, [msg]);
+
+  return (
+    <Animated.View style={[s.toast, { borderColor: color + '40', opacity, transform: [{ translateY }] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+
+const s = StyleSheet.create({
+  toast: {
+    position: 'absolute', bottom: 110, alignSelf: 'center',
+    backgroundColor: C.card, borderWidth: 1,
+    borderRadius: 14, paddingHorizontal: 18, paddingVertical: 10,
+    zIndex: 999, shadowColor: '#000', shadowOpacity: 0.4,
+    shadowRadius: 12, elevation: 10,
+  },
+  text: { fontSize: 13, fontWeight: '700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/OverallCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+import { getStatus } from '../utils/attendance';
+
+export default function OverallCard({ totalPresent, totalClasses, subjects }) {
+  const overallPct    = totalClasses > 0 ? Math.round((totalPresent / totalClasses) * 100) : 0;
+  const overallStatus = getStatus(overallPct);
+  const barAnim       = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(barAnim, {
+      toValue: overallPct / 100, duration: 700,
+      useNativeDriver: false,
+    }).start();
+  }, [overallPct]);
+
+  const barWidth = barAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
+
+  const STATS = [
+    { n: totalPresent,                    l: 'Present',  c: C.green },
+    { n: totalClasses - totalPresent,     l: 'Absent',   c: C.red   },
+    { n: subjects.length,                 l: 'Subjects', c: C.p     },
+  ];
+
+  return (
+    <LinearGradient colors={['rgba(124,58,237,0.2)','rgba(255,140,66,0.12)']} style={s.card}>
+      {/* Top border glow */}
+      <View style={s.topBorder} />
+
+      {/* Percent + Status */}
+      <View style={s.topRow}>
+        <View>
+          <Text style={[s.pct, { color: overallStatus.color }]}>{overallPct}%</Text>
+          <Text style={s.label}>Overall Attendance</Text>
+        </View>
+        <View style={s.right}>
+          <View style={[s.statusPill, { backgroundColor: overallStatus.color + '18', borderColor: overallStatus.color + '35' }]}>
+            <Text style={[s.statusText, { color: overallStatus.color }]}>{overallStatus.text}</Text>
+          </View>
+          <Text style={s.classes}>{totalPresent}/{totalClasses} Classes</Text>
+        </View>
+      </View>
+
+      {/* Progress Bar */}
+      <View style={s.barTrack}>
+        <Animated.View style={[s.barFill, { width: barWidth, backgroundColor: overallStatus.color }]} />
+      </View>
+      <View style={s.barLabels}>
+        <Text style={s.barLbl}>0%</Text>
+        <Text style={[s.barLbl, { color: C.gold }]}>75% Min</Text>
+        <Text style={s.barLbl}>100%</Text>
+      </View>
+
+      {/* Stat Boxes */}
+      <View style={s.statRow}>
+        {STATS.map((st, i) => (
+          <View key={i} style={s.statBox}>
+            <Text style={[s.statN, { color: st.c }]}>{st.n}</Text>
+            <Text style={s.statL}>{st.l}</Text>
+          </View>
+        ))}
+      </View>
+    </LinearGradient>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius: 22, borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.2)',
+    padding: 20, marginBottom: 14, overflow: 'hidden',
+  },
+  topBorder: {
+    position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+    backgroundColor: 'rgba(167,139,250,0.5)',
+  },
+  topRow:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 },
+  pct:        { fontSize: 52, fontWeight: '800', lineHeight: 56 },
+  label:      { fontSize: 11, color: C.t2, marginTop: 4 },
+  right:      { alignItems: 'flex-end', gap: 8 },
+  statusPill: { borderWidth: 1, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 5 },
+  statusText: { fontSize: 11, fontWeight: '700' },
+  classes:    { fontSize: 12, color: C.t2 },
+  barTrack:   { height: 8, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 99, overflow: 'hidden', marginBottom: 6 },
+  barFill:    { height: 8, borderRadius: 99 },
+  barLabels:  { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
+  barLbl:     { fontSize: 9, color: C.t3 },
+  statRow:    { flexDirection: 'row', gap: 10 },
+  statBox:    {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.25)',
+    borderRadius: 12, padding: 10, alignItems: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+  },
+  statN: { fontSize: 20, fontWeight: '700' },
+  statL: { fontSize: 9, color: C.t3, marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/BunkCalculator.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+import { getBunkInfo } from '../utils/attendance';
+
+export default function BunkCalculator({ totalPresent, totalClasses }) {
+  const { canBunk, needed } = getBunkInfo(totalPresent, totalClasses);
+
+  return (
+    <View style={s.card}>
+      <Text style={s.sub}>Based on 75% minimum requirement</Text>
+      <View style={s.grid}>
+        <View style={[s.item, {
+          backgroundColor: canBunk > 0 ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.08)',
+          borderColor:     canBunk > 0 ? 'rgba(52,211,153,0.22)' : 'rgba(248,113,113,0.22)',
+        }]}>
+          <Text style={[s.n, { color: canBunk > 0 ? C.green : C.red }]}>{canBunk}</Text>
+          <Text style={s.l}>Classes You Can{'\n'}Skip Safely</Text>
+        </View>
+        <View style={[s.item, {
+          backgroundColor: needed > 0 ? 'rgba(248,113,113,0.08)' : 'rgba(52,211,153,0.08)',
+          borderColor:     needed > 0 ? 'rgba(248,113,113,0.22)' : 'rgba(52,211,153,0.22)',
+        }]}>
+          <Text style={[s.n, { color: needed > 0 ? C.red : C.green }]}>{needed}</Text>
+          <Text style={s.l}>{needed > 0 ? 'Classes to Attend\nto Reach 75%' : "You're Above\n75% Minimum ✓"}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    backgroundColor: C.card, borderRadius: 18,
+    borderWidth: 1, borderColor: C.border,
+    padding: 16, marginBottom: 14,
+  },
+  sub:  { fontSize: 12, color: C.t2, marginBottom: 12 },
+  grid: { flexDirection: 'row', gap: 10 },
+  item: {
+    flex: 1, borderRadius: 14, padding: 14,
+    alignItems: 'center', borderWidth: 1,
+  },
+  n:    { fontSize: 28, fontWeight: '800', marginBottom: 6 },
+  l:    { fontSize: 10, color: C.t3, textAlign: 'center', lineHeight: 15 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SubjectCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { C } from '../theme/colors';
+import { getStatus } from '../utils/attendance';
+
+export default function SubjectCard({ subject, onPresent, onAbsent, onHistory, onDelete }) {
+  const { present, total, color, icon, name, code } = subject;
+  const pct    = total > 0 ? Math.round((present / total) * 100) : 0;
+  const status = getStatus(pct);
+  const barAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(barAnim, {
+      toValue: pct / 100, duration: 600,
+      useNativeDriver: false,
+    }).start();
+  }, [pct]);
+
+  const barWidth = barAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
+
+  return (
+    <View style={s.card}>
+      {/* TOP ROW */}
+      <View style={s.topRow}>
+        <View style={s.leftRow}>
+          <View style={[s.ico, { backgroundColor: color + '22', borderColor: color + '35' }]}>
+            <Text style={s.icoText}>{icon}</Text>
+          </View>
+          <View>
+            <Text style={s.name}>{name}</Text>
+            <Text style={s.code}>{code}</Text>
+          </View>
+        </View>
+        <View style={s.rightCol}>
+          <Text style={[s.pct, { color: status.color }]}>{pct}%</Text>
+          <View style={[s.statusBadge, { backgroundColor: status.color + '18', borderColor: status.color + '30' }]}>
+            <Text style={[s.statusText, { color: status.color }]}>{status.text}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* PROGRESS BAR */}
+      <View style={s.barRow}>
+        <View style={s.barTrack}>
+          <Animated.View style={[s.barFill, { width: barWidth, backgroundColor: color }]} />
+        </View>
+        <Text style={s.classesText}>{present}/{total}</Text>
+      </View>
+
+      {/* ACTION BUTTONS */}
+      <View style={s.actions}>
+        <TouchableOpacity style={[s.btn, s.btnPresent]} onPress={onPresent} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color: C.green }]}>✅ Present</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[s.btn, s.btnAbsent]} onPress={onAbsent} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color: C.red }]}>❌ Absent</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[s.btn, s.btnHistory]} onPress={onHistory} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color: C.t2 }]}>📋 Log</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* DELETE */}
+      <TouchableOpacity style={s.deleteBtn} onPress={onDelete} activeOpacity={0.75}>
+        <Text style={s.deleteText}>🗑️ Remove</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    backgroundColor: C.card, borderRadius: 18,
+    borderWidth: 1, borderColor: C.border,
+    padding: 15, marginBottom: 10,
+  },
+  topRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  leftRow:  { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  ico: {
+    width: 40, height: 40, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1,
+  },
+  icoText:  { fontSize: 19 },
+  name:     { fontSize: 14, fontWeight: '700', color: C.t1 },
+  code:     { fontSize: 10, color: C.t3, marginTop: 1 },
+  rightCol: { alignItems: 'flex-end', gap: 4 },
+  pct:      { fontSize: 22, fontWeight: '800' },
+  statusBadge: { borderWidth: 1, borderRadius: 20, paddingHorizontal: 9, paddingVertical: 2 },
+  statusText:  { fontSize: 9, fontWeight: '700' },
+
+  barRow:     { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  barTrack:   { flex: 1, height: 6, backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden' },
+  barFill:    { height: 6, borderRadius: 99 },
+  classesText:{ fontSize: 10, color: C.t3, minWidth: 32 },
+
+  actions:    { flexDirection: 'row', gap: 7, marginBottom: 6 },
+  btn:        { flex: 1, borderRadius: 10, padding: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  btnPresent: { backgroundColor: 'rgba(52,211,153,0.1)',   borderColor: 'rgba(52,211,153,0.25)'   },
+  btnAbsent:  { backgroundColor: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.22)'  },
+  btnHistory: { backgroundColor: C.card2,                  borderColor: C.border2                 },
+  btnText:    { fontSize: 11, fontWeight: '700' },
+
+  deleteBtn:  { alignItems: 'center', paddingTop: 4 },
+  deleteText: { fontSize: 10, color: C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/AddSubjectModal.js
+// ================================================================
+import React, { useState } from 'react';
+import {
+  View, Text, StyleSheet, Modal, TouchableOpacity,
+  TextInput, KeyboardAvoidingView, Platform, Animated,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+export default function AddSubjectModal({ visible, onClose, onAdd }) {
+  const [name,  setName]  = useState('');
+  const [code,  setCode]  = useState('');
+  const [total, setTotal] = useState('');
+
+  function handleAdd() {
+    if (!name.trim()) return;
+    onAdd({ name, code, total });
+    setName(''); setCode(''); setTotal('');
+  }
+
+  if (!visible) return null;
+
+  return (
+    <Modal transparent visible={visible} animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={s.overlay} activeOpacity={1} onPress={onClose} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={s.kvWrap}
+      >
+        <View style={s.sheet}>
+          <View style={s.handle} />
+          <Text style={s.title}>📚 Add Subject</Text>
+          <Text style={s.sub}>Add a new subject to track attendance</Text>
+
+          {/* SUBJECT NAME */}
+          <Text style={s.label}>SUBJECT NAME</Text>
+          <TextInput
+            style={s.input} value={name} onChangeText={setName}
+            placeholder="e.g. Mathematics" placeholderTextColor={C.t3}
+          />
+
+          {/* CODE */}
+          <Text style={s.label}>SUBJECT CODE</Text>
+          <TextInput
+            style={s.input} value={code} onChangeText={setCode}
+            placeholder="e.g. BEU-MA-301" placeholderTextColor={C.t3}
+          />
+
+          {/* TOTAL CLASSES */}
+          <Text style={s.label}>TOTAL CLASSES (so far)</Text>
+          <TextInput
+            style={s.input} value={total} onChangeText={setTotal}
+            placeholder="e.g. 30" placeholderTextColor={C.t3}
+            keyboardType="numeric"
+          />
+
+          {/* BUTTONS */}
+          <View style={s.btnRow}>
+            <TouchableOpacity style={s.cancelBtn} onPress={onClose} activeOpacity={0.8}>
+              <Text style={s.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleAdd} activeOpacity={0.85} style={{ flex: 1 }}>
