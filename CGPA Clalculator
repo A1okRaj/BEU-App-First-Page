@@ -1,0 +1,585 @@
+// ================================================================
+//  BEU SGPA / CGPA CALCULATOR — React Native + Expo Conversion
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── utils/
+//  │   │   └── grades.js
+//  │   ├── components/
+//  │   │   ├── ResultRing.js
+//  │   │   ├── SemSelector.js
+//  │   │   ├── SubjectInputCard.js
+//  │   │   ├── AddSubjectRow.js
+//  │   │   ├── GradeTable.js
+//  │   │   ├── CgpaCard.js
+//  │   │   ├── SemHistory.js
+//  │   │   ├── TipsCard.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── ToastMessage.js
+//  │   └── screens/
+//  │       └── SgpaScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: package.json
+// ================================================================
+/*
+{
+  "name": "beu-sgpa",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-status-bar": "~1.12.1",
+    "expo-linear-gradient": "~13.0.2",
+    "react": "18.2.0",
+    "react-native": "0.74.1",
+    "react-native-safe-area-context": "4.10.1",
+    "react-native-screens": "3.31.1",
+    "react-native-svg": "15.2.0",
+    "@react-native-picker/picker": "2.7.5"
+  },
+  "devDependencies": { "@babel/core": "^7.24.0" }
+}
+*/
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  red:     '#F87171',
+  blue:    '#60A5FA',
+};
+
+
+
+
+// ================================================================
+// FILE: src/utils/grades.js
+// ================================================================
+export const GRADES = [
+  { label: 'O  — 10', value: 10, symbol: 'O'  },
+  { label: 'A+ — 9',  value: 9,  symbol: 'A+' },
+  { label: 'A  — 8',  value: 8,  symbol: 'A'  },
+  { label: 'B+ — 7',  value: 7,  symbol: 'B+' },
+  { label: 'B  — 6',  value: 6,  symbol: 'B'  },
+  { label: 'C  — 5',  value: 5,  symbol: 'C'  },
+  { label: 'D  — 4',  value: 4,  symbol: 'D'  },
+  { label: 'F  — 0',  value: 0,  symbol: 'F'  },
+];
+
+export const GRADE_COLORS = {
+  10: '#34D399', 9: '#34D399', 8: '#A78BFA',
+  7: '#60A5FA',  6: '#F59E0B', 5: '#FB923C',
+  4: '#F87171',  0: '#EF4444',
+};
+
+export function getGradeSymbol(gp) {
+  const map = { 10:'O', 9:'A+', 8:'A', 7:'B+', 6:'B', 5:'C', 4:'D', 0:'F' };
+  return map[gp] ?? 'F';
+}
+
+export function getGradeRemarks(sgpa) {
+  if (sgpa >= 9) return { text: 'Outstanding 🏆', color: '#34D399' };
+  if (sgpa >= 8) return { text: 'Excellent ⭐',   color: '#34D399' };
+  if (sgpa >= 7) return { text: 'Very Good 👍',   color: '#A78BFA' };
+  if (sgpa >= 6) return { text: 'Good 😊',        color: '#60A5FA' };
+  if (sgpa >= 5) return { text: 'Average ⚠️',     color: '#F59E0B' };
+  return           { text: 'Needs Work ❌',        color: '#F87171' };
+}
+
+export const BEU_SUBJECTS = {
+  1: ['Engineering Maths-I', 'Engineering Physics', 'Basic Electrical Eng.', 'Engg. Graphics', 'Programming in C', 'English Comm.'],
+  2: ['Engineering Maths-II', 'Engineering Chemistry', 'Basic Electronics', 'Data Structures', 'Digital Electronics', 'Workshop Practice'],
+  3: ['Discrete Mathematics', 'OOP with Java', 'Computer Org. & Arch.', 'Operating Systems', 'DBMS', 'Software Engineering'],
+  4: ['Theory of Computation', 'Computer Networks', 'Microprocessors', 'Design & Analysis of Algo.', 'Compiler Design', 'Project'],
+  5: ['Artificial Intelligence', 'Machine Learning', 'Web Technologies', 'Computer Graphics', 'Mobile Computing', 'Elective-I'],
+  6: ['Deep Learning', 'Cloud Computing', 'Information Security', 'Big Data Analytics', 'Elective-II', 'Project-I'],
+  7: ['Distributed Systems', 'IoT & Embedded', 'Natural Language Processing', 'Elective-III', 'Elective-IV', 'Project-II'],
+  8: ['Industry Training', 'Major Project', 'Technical Seminar', 'Elective-V', 'Elective-VI', 'Project Report'],
+};
+
+export const SEM_HISTORY = [
+  { sem: 'Semester 1', sgpa: 7.8, subs: 6, credits: 24, change: '+0.0', changeColor: '#60A5FA' },
+  { sem: 'Semester 2', sgpa: 8.1, subs: 6, credits: 24, change: '+0.3', changeColor: '#34D399' },
+  { sem: 'Semester 3', sgpa: 7.4, subs: 6, credits: 22, change: '-0.7', changeColor: '#F87171' },
+];
+
+export function initialSubjects(semNum) {
+  return (BEU_SUBJECTS[semNum] || BEU_SUBJECTS[3]).map((name, i) => ({
+    id: i + 1, name, credit: 4, grade: 7,
+  }));
+}
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:12 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty      = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue:1, duration:250, useNativeDriver:true }),
+      Animated.timing(ty,      { toValue:0, duration:250, useNativeDriver:true }),
+    ]).start();
+  }, [msg]);
+
+  return (
+    <Animated.View style={[s.toast, { borderColor: color+'40', opacity, transform:[{translateY:ty}] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+
+const s = StyleSheet.create({
+  toast: {
+    position:'absolute', bottom:110, alignSelf:'center',
+    backgroundColor:C.card, borderWidth:1,
+    borderRadius:14, paddingHorizontal:18, paddingVertical:10,
+    zIndex:999, elevation:10,
+    shadowColor:'#000', shadowOpacity:0.4, shadowRadius:12,
+  },
+  text: { fontSize:13, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ResultRing.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C, GRADE_COLORS } from '../theme/colors';
+import { getGradeSymbol, getGradeRemarks } from '../utils/grades';
+
+const SIZE = 140;
+const R    = 60;
+const CIRC = 2 * Math.PI * R;
+
+// Animated SVG circle wrapper
+import Animated as AN from 'react-native';
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+export default function ResultRing({ sgpa, calculated, subjects, totalCredits, activeSem }) {
+  const dashAnim   = useRef(new Animated.Value(CIRC)).current;
+  const colorValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const target = calculated ? CIRC - CIRC * (sgpa / 10) : CIRC * 0.7;
+    Animated.timing(dashAnim, { toValue: target, duration: 700, useNativeDriver: false }).start();
+  }, [sgpa, calculated]);
+
+  const ringColor = calculated
+    ? (GRADE_COLORS[Math.round(sgpa)] || C.p)
+    : 'rgba(167,139,250,0.3)';
+
+  const remarks = getGradeRemarks(sgpa);
+
+  const STATS = [
+    { n: subjects.length,  l: 'Subjects', c: C.p    },
+    { n: totalCredits,     l: 'Credits',  c: C.teal  },
+    { n: `Sem ${activeSem}`,l: 'Current', c: C.gold  },
+  ];
+
+  return (
+    <LinearGradient
+      colors={['rgba(124,58,237,0.2)', 'rgba(45,212,191,0.1)']}
+      style={s.card}
+    >
+      <View style={s.topBorder} />
+
+      {/* SVG RING */}
+      <View style={s.ringWrap}>
+        <Svg width={SIZE} height={SIZE}>
+          {/* Track */}
+          <Circle cx={SIZE/2} cy={SIZE/2} r={R}
+            stroke="rgba(255,255,255,0.07)" strokeWidth={10} fill="none" />
+          {/* Fill — static snapshot (Animated SVG in RN needs workaround) */}
+          <Circle cx={SIZE/2} cy={SIZE/2} r={R}
+            stroke={ringColor} strokeWidth={10} fill="none"
+            strokeDasharray={CIRC}
+            strokeDashoffset={calculated ? CIRC - CIRC * (sgpa / 10) : CIRC * 0.7}
+            strokeLinecap="round"
+            rotation={-90} origin={`${SIZE/2},${SIZE/2}`}
+          />
+        </Svg>
+        {/* Center text */}
+        <View style={s.center}>
+          <Text style={[s.sgpaNum, { color: calculated ? ringColor : C.t3 }]}>
+            {calculated ? sgpa.toFixed(2) : '—'}
+          </Text>
+          <Text style={s.sgpaLbl}>SGPA</Text>
+        </View>
+      </View>
+
+      {/* GRADE + REMARK */}
+      {calculated ? (
+        <>
+          <Text style={[s.grade, { color: remarks.color }]}>
+            {getGradeSymbol(Math.round(sgpa))} Grade
+          </Text>
+          <Text style={[s.remark, { color: remarks.color }]}>{remarks.text}</Text>
+        </>
+      ) : (
+        <Text style={s.hint}>Grades bharke Calculate karo 👇</Text>
+      )}
+
+      {/* STAT BOXES */}
+      <View style={s.statsRow}>
+        {STATS.map((st, i) => (
+          <View key={i} style={s.statBox}>
+            <Text style={[s.statN, { color: st.c }]}>{st.n}</Text>
+            <Text style={s.statL}>{st.l}</Text>
+          </View>
+        ))}
+      </View>
+    </LinearGradient>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:24, borderWidth:1,
+    borderColor:'rgba(167,139,250,0.2)',
+    padding:22, marginBottom:14,
+    alignItems:'center', overflow:'hidden',
+  },
+  topBorder: {
+    position:'absolute', top:0, left:0, right:0, height:1,
+    backgroundColor:'rgba(167,139,250,0.6)',
+  },
+  ringWrap: { width:SIZE, height:SIZE, marginBottom:16 },
+  center: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems:'center', justifyContent:'center',
+  },
+  sgpaNum:  { fontSize:34, fontWeight:'900', lineHeight:38 },
+  sgpaLbl:  { fontSize:10, color:C.t3, letterSpacing:1, textTransform:'uppercase', marginTop:2 },
+  grade:    { fontSize:22, fontWeight:'800', marginBottom:4 },
+  remark:   { fontSize:12, marginBottom:4 },
+  hint:     { fontSize:13, color:C.t3, marginBottom:4 },
+  statsRow: { flexDirection:'row', gap:10, marginTop:14, width:'100%' },
+  statBox: {
+    flex:1, backgroundColor:'rgba(0,0,0,0.25)',
+    borderRadius:12, padding:10, alignItems:'center',
+    borderWidth:1, borderColor:'rgba(255,255,255,0.06)',
+  },
+  statN: { fontSize:18, fontWeight:'700' },
+  statL: { fontSize:9,  color:C.t3, marginTop:2, textTransform:'uppercase', letterSpacing:0.5 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SemSelector.js
+// ================================================================
+import React from 'react';
+import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SemSelector({ active, onChange }) {
+  return (
+    <ScrollView
+      horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}
+    >
+      {[1,2,3,4,5,6,7,8].map(sem => (
+        <TouchableOpacity
+          key={sem}
+          style={[s.pill, active === sem && s.pillActive]}
+          onPress={() => onChange(sem)}
+          activeOpacity={0.75}
+        >
+          <Text style={[s.label, active === sem && s.labelActive]}>Sem {sem}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  scroll: { marginBottom:14 },
+  row:    { flexDirection:'row', gap:8, paddingBottom:4 },
+  pill: {
+    borderRadius:20, paddingHorizontal:16, paddingVertical:8,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+  },
+  pillActive: {
+    backgroundColor:'rgba(167,139,250,0.18)',
+    borderColor:'rgba(167,139,250,0.4)',
+  },
+  label:       { fontSize:12, fontWeight:'600', color:C.t2 },
+  labelActive: { color:C.p },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/AddSubjectRow.js
+// ================================================================
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+export default function AddSubjectRow({ onAdd }) {
+  const [name, setName] = useState('');
+
+  function handleAdd() {
+    if (!name.trim()) return;
+    onAdd(name.trim());
+    setName('');
+  }
+
+  return (
+    <View style={s.row}>
+      <TextInput
+        style={s.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Add subject name..."
+        placeholderTextColor={C.t3}
+        returnKeyType="done"
+        onSubmitEditing={handleAdd}
+      />
+      <TouchableOpacity onPress={handleAdd} activeOpacity={0.85}>
+        <LinearGradient colors={['#7C3AED','#A78BFA']} style={s.btn}>
+          <Text style={s.btnText}>+ Add</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:    { flexDirection:'row', gap:8, marginBottom:14 },
+  input: {
+    flex:1, backgroundColor:C.card,
+    borderWidth:1, borderColor:C.border2,
+    borderRadius:12, paddingHorizontal:14, paddingVertical:12,
+    color:C.t1, fontSize:13,
+  },
+  btn:     { borderRadius:12, paddingHorizontal:16, paddingVertical:12, justifyContent:'center' },
+  btnText: { fontSize:13, fontWeight:'700', color:'#fff' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SubjectInputCard.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { C, GRADES, GRADE_COLORS } from '../theme/colors';
+
+export default function SubjectInputCard({ subjects, onGradeChange, onCreditChange, onDelete }) {
+  return (
+    <View style={s.card}>
+      {subjects.map((sub, idx) => {
+        const gc = GRADE_COLORS[sub.grade] || C.p;
+        return (
+          <View key={sub.id} style={[s.row, idx < subjects.length - 1 && s.rowBorder]}>
+            {/* LEFT: Name + credit */}
+            <View style={s.left}>
+              <Text style={s.name} numberOfLines={1}>{sub.name}</Text>
+              {/* Credit buttons */}
+              <View style={s.creditRow}>
+                <TouchableOpacity
+                  style={s.cb}
+                  onPress={() => onCreditChange(sub.id, -1)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={s.cbText}>−</Text>
+                </TouchableOpacity>
+                <Text style={s.creditVal}>{sub.credit}</Text>
+                <TouchableOpacity
+                  style={s.cb}
+                  onPress={() => onCreditChange(sub.id, +1)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={s.cbText}>+</Text>
+                </TouchableOpacity>
+                <Text style={s.creditLbl}>cr</Text>
+              </View>
+            </View>
+
+            {/* RIGHT: Grade Picker + Delete */}
+            <View style={s.right}>
+              <View style={[s.pickerWrap, { borderColor: gc + '50' }]}>
+                <Picker
+                  selectedValue={sub.grade}
+                  onValueChange={val => onGradeChange(sub.id, val)}
+                  style={[s.picker, { color: gc }]}
+                  dropdownIconColor={gc}
+                  mode="dropdown"
+                >
+                  {GRADES.map(g => (
+                    <Picker.Item
+                      key={g.value}
+                      label={g.label}
+                      value={g.value}
+                      color={C.t1}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <TouchableOpacity
+                style={s.del}
+                onPress={() => onDelete(sub.id)}
+                activeOpacity={0.75}
+              >
+                <Text style={s.delText}>🗑️</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    backgroundColor:C.card, borderRadius:20,
+    borderWidth:1, borderColor:C.border,
+    padding:4, marginBottom:14,
+  },
+  row: {
+    flexDirection:'row', alignItems:'center',
+    paddingHorizontal:12, paddingVertical:10, gap:10,
+  },
+  rowBorder: { borderBottomWidth:1, borderBottomColor:C.border },
+  left:      { flex:1 },
+  name:      { fontSize:13, fontWeight:'600', color:C.t1, marginBottom:5 },
+  creditRow: { flexDirection:'row', alignItems:'center', gap:6 },
+  cb: {
+    width:26, height:26, borderRadius:7,
+    backgroundColor:C.card3, borderWidth:1, borderColor:C.border2,
+    alignItems:'center', justifyContent:'center',
+  },
+  cbText:    { fontSize:15, fontWeight:'700', color:C.t2, lineHeight:18 },
+  creditVal: { fontSize:14, fontWeight:'700', color:C.t1, minWidth:16, textAlign:'center' },
+  creditLbl: { fontSize:10, color:C.t3 },
+  right:     { flexDirection:'row', alignItems:'center', gap:8 },
+  pickerWrap:{
+    backgroundColor:C.card2, borderRadius:10,
+    borderWidth:1, width:110, overflow:'hidden',
+  },
+  picker:    { height:40, width:110 },
+  del: {
+    width:30, height:30, borderRadius:9,
+    backgroundColor:'rgba(248,113,113,0.08)',
+    borderWidth:1, borderColor:'rgba(248,113,113,0.2)',
+    alignItems:'center', justifyContent:'center',
+  },
+  delText:   { fontSize:13 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/GradeTable.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C, GRADE_COLORS, GRADES } from '../theme/colors';
+import { getGradeSymbol } from '../utils/grades';
+
+const COLS = ['Subject', 'Credits', 'Grade', 'Points'];
+
+export default function GradeTable({ subjects }) {
+  return (
+    <View style={s.table}>
+      {/* Header */}
+      <View style={[s.row, s.head]}>
+        {COLS.map((c,i) => (
+          <Text key={i} style={[s.hCell, i===0 && s.wide]}>{c}</Text>
+        ))}
+      </View>
+      {/* Rows */}
+      {subjects.map((sub, i) => {
+        const gc = GRADE_COLORS[sub.grade] || C.p;
+        const gp = sub.credit * sub.grade;
+        return (
+          <View key={sub.id} style={[s.row, i < subjects.length-1 && s.rowBorder]}>
+            <Text style={[s.cell, s.wide]} numberOfLines={1}>{sub.name}</Text>
+            <Text style={[s.cell, { color:C.teal }]}>{sub.credit}</Text>
