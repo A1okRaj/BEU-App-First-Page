@@ -1,0 +1,554 @@
+// ================================================================
+//  BEU RESULTS APP — React Native + Expo Conversion
+//  From: React.js Web App → React Native Mobile App
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── data/
+//  │   │   └── resultsData.js
+//  │   ├── components/
+//  │   │   ├── ProfileCard.js
+//  │   │   ├── CgpaTrendCard.js
+//  │   │   ├── RankCard.js
+//  │   │   ├── SemTabs.js
+//  │   │   ├── SemResultCard.js
+//  │   │   ├── SubjectModal.js
+//  │   │   ├── MarksheetCard.js
+//  │   │   ├── BacklogCard.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── ToastMessage.js
+//  │   └── screens/
+//  │       └── ResultsScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  red:     '#F87171',
+  blue:    '#60A5FA',
+};
+
+export const GRADE_COLOR = {
+  10:'#34D399', 9:'#34D399', 8:'#A78BFA',
+  7:'#60A5FA',  6:'#F59E0B', 5:'#FB923C',
+  4:'#F87171',  0:'#EF4444',
+};
+
+export const GP_SYMBOL = {
+  10:'O', 9:'A+', 8:'A', 7:'B+',
+  6:'B',  5:'C',  4:'D', 0:'F',
+};
+
+export function gradeColor(gp) { return GRADE_COLOR[gp] || C.p; }
+export function gpSymbol(gp)   { return GP_SYMBOL[gp]   || '—'; }
+export function getRemarks(sgpa) {
+  if (sgpa >= 9) return { t:'Outstanding 🏆', c:C.green };
+  if (sgpa >= 8) return { t:'Excellent ⭐',   c:C.green };
+  if (sgpa >= 7) return { t:'Very Good 👍',   c:C.p     };
+  if (sgpa >= 6) return { t:'Good 😊',        c:C.blue  };
+  if (sgpa >= 5) return { t:'Pass ⚠️',        c:C.gold  };
+  return           { t:'Fail ❌',             c:C.red   };
+}
+
+
+
+
+// ================================================================
+// FILE: src/data/resultsData.js
+// ================================================================
+export const RESULTS = [
+  {
+    sem:'Semester 1', date:'Dec 2024', sgpa:7.8, rank:12, total:60,
+    credits:24, backlogs:0,
+    subjects:[
+      { name:'Engineering Mathematics I', code:'BMA-101', credits:4, internal:38, external:58, total:96,  gp:10 },
+      { name:'Engineering Physics',        code:'BPH-101', credits:4, internal:32, external:50, total:82,  gp:9  },
+      { name:'Basic Electrical Engg.',     code:'BEE-101', credits:4, internal:28, external:46, total:74,  gp:8  },
+      { name:'Programming in C',           code:'BCS-101', credits:4, internal:35, external:52, total:87,  gp:9  },
+      { name:'Engg. Graphics',             code:'BEG-101', credits:4, internal:30, external:44, total:74,  gp:8  },
+      { name:'English Communication',      code:'BEN-101', credits:4, internal:36, external:54, total:90,  gp:10 },
+    ],
+  },
+  {
+    sem:'Semester 2', date:'Jun 2025', sgpa:8.1, rank:8, total:60,
+    credits:24, backlogs:0,
+    subjects:[
+      { name:'Engineering Mathematics II', code:'BMA-201', credits:4, internal:40, external:55, total:95,  gp:10 },
+      { name:'Engineering Chemistry',       code:'BCH-201', credits:4, internal:30, external:46, total:76,  gp:8  },
+      { name:'Basic Electronics',           code:'BEC-201', credits:4, internal:34, external:50, total:84,  gp:9  },
+      { name:'Data Structures',             code:'BCS-201', credits:4, internal:36, external:52, total:88,  gp:9  },
+      { name:'Digital Electronics',         code:'BEC-202', credits:4, internal:28, external:40, total:68,  gp:7  },
+      { name:'Workshop Practice',           code:'BWP-201', credits:4, internal:35, external:50, total:85,  gp:9  },
+    ],
+  },
+  {
+    sem:'Semester 3', date:'Result Awaited', sgpa:null, rank:null, total:60,
+    credits:22, backlogs:0,
+    subjects:[
+      { name:'Discrete Mathematics',    code:'BMA-301', credits:4, internal:32, external:null, total:null, gp:null },
+      { name:'OOP with Java',           code:'BCS-302', credits:4, internal:36, external:null, total:null, gp:null },
+      { name:'Computer Org. & Arch.',   code:'BCS-303', credits:4, internal:30, external:null, total:null, gp:null },
+      { name:'Operating Systems',       code:'BCS-304', credits:4, internal:34, external:null, total:null, gp:null },
+      { name:'DBMS',                    code:'BCS-305', credits:4, internal:38, external:null, total:null, gp:null },
+      { name:'Software Engineering',    code:'BCS-306', credits:2, internal:35, external:null, total:null, gp:null },
+    ],
+  },
+];
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:10 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty      = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue:1, duration:250, useNativeDriver:true }),
+      Animated.timing(ty,      { toValue:0, duration:250, useNativeDriver:true }),
+    ]).start();
+  }, [msg]);
+
+  return (
+    <Animated.View style={[s.toast, { borderColor:color+'40', opacity, transform:[{translateY:ty}] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+
+const s = StyleSheet.create({
+  toast: {
+    position:'absolute', bottom:110, alignSelf:'center',
+    backgroundColor:C.card, borderWidth:1,
+    borderRadius:14, paddingHorizontal:20, paddingVertical:10,
+    zIndex:999, elevation:10,
+  },
+  text: { fontSize:13, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ProfileCard.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+export default function ProfileCard({ cgpa, totalCredits }) {
+  const STATS = [
+    { n:cgpa,         l:'CGPA',     c:C.green },
+    { n:totalCredits, l:'Credits',  c:C.p     },
+    { n:'3rd',        l:'Sem',      c:C.or    },
+    { n:'0',          l:'Backlogs', c:C.teal  },
+  ];
+
+  return (
+    <LinearGradient
+      colors={['rgba(52,211,153,0.18)','rgba(124,58,237,0.12)']}
+      style={s.card}
+    >
+      <View style={s.topBorder} />
+      <View style={s.top}>
+        <LinearGradient colors={['#7C3AED','#34D399']} style={s.avatar}>
+          <Text style={s.avatarText}>A</Text>
+        </LinearGradient>
+        <View style={s.info}>
+          <Text style={s.name}>Alok Kumar</Text>
+          <Text style={s.roll}>ROLL: 2301010 · BEU2024</Text>
+          <Text style={s.college}>BCE Bakhtiyarpur · CSE · Batch 2027</Text>
+        </View>
+      </View>
+      <View style={s.statsRow}>
+        {STATS.map((st, i) => (
+          <View key={i} style={s.statBox}>
+            <Text style={[s.statN, { color:st.c }]}>{st.n}</Text>
+            <Text style={s.statL}>{st.l}</Text>
+          </View>
+        ))}
+      </View>
+    </LinearGradient>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:24, borderWidth:1,
+    borderColor:'rgba(52,211,153,0.2)',
+    padding:20, marginBottom:14, overflow:'hidden',
+  },
+  topBorder: {
+    position:'absolute', top:0, left:0, right:0, height:1,
+    backgroundColor:'rgba(52,211,153,0.6)',
+  },
+  top:     { flexDirection:'row', alignItems:'center', gap:14, marginBottom:16 },
+  avatar: {
+    width:60, height:60, borderRadius:18,
+    alignItems:'center', justifyContent:'center',
+    shadowColor:C.green, shadowOpacity:0.4, shadowRadius:12, elevation:8,
+  },
+  avatarText: { fontSize:26, fontWeight:'900', color:'#fff' },
+  info:    { flex:1 },
+  name:    { fontSize:20, fontWeight:'800', color:C.t1 },
+  roll:    { fontFamily:'monospace', fontSize:11, color:C.t3, marginTop:4, letterSpacing:1 },
+  college: { fontSize:11, color:C.t2, marginTop:2 },
+  statsRow:{ flexDirection:'row', gap:8 },
+  statBox: {
+    flex:1, backgroundColor:'rgba(0,0,0,0.25)',
+    borderRadius:12, padding:10, alignItems:'center',
+    borderWidth:1, borderColor:'rgba(255,255,255,0.06)',
+  },
+  statN: { fontSize:18, fontWeight:'800' },
+  statL: { fontSize:8, color:C.t3, marginTop:2, textTransform:'uppercase', letterSpacing:0.3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/CgpaTrendCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import { C, gradeColor } from '../theme/colors';
+import { RESULTS } from '../data/resultsData';
+
+function TrendBar({ result, idx }) {
+  const anim = useRef(new Animated.Value(0)).current;
+  const pct  = result.sgpa ? result.sgpa / 10 : 0.05;
+  const gc   = result.sgpa ? gradeColor(Math.round(result.sgpa)) : 'transparent';
+
+  useEffect(() => {
+    Animated.timing(anim, {
+      toValue: pct, duration: 700, delay: idx * 80, useNativeDriver: false,
+    }).start();
+  }, []);
+
+  const height = anim.interpolate({ inputRange:[0,1], outputRange:['0%','100%'] });
+
+  return (
+    <View style={s.col}>
+      {result.sgpa && <Text style={[s.tip, { color:gc }]}>{result.sgpa}</Text>}
+      <View style={s.barWrap}>
+        <Animated.View style={[
+          s.bar,
+          { height, backgroundColor: result.sgpa ? gc : 'transparent',
+            borderWidth: result.sgpa ? 0 : 1,
+            borderColor:'rgba(255,255,255,0.15)',
+            borderStyle:'dashed' },
+        ]} />
+      </View>
+      <Text style={s.lbl}>S{idx+1}</Text>
+    </View>
+  );
+}
+
+export default function CgpaTrendCard({ cgpa }) {
+  return (
+    <View style={s.card}>
+      <Text style={s.heading}>📈 CGPA Trend</Text>
+      <View style={s.chart}>
+        {RESULTS.map((r, i) => <TrendBar key={i} result={r} idx={i} />)}
+      </View>
+      <View style={s.divider} />
+      <View style={s.footer}>
+        <Text style={s.footerItem}>Best: <Text style={{ color:C.green, fontWeight:'700' }}>8.1 (Sem 2)</Text></Text>
+        <Text style={s.footerItem}>CGPA: <Text style={{ color:C.gold, fontWeight:'700' }}>{cgpa}</Text></Text>
+        <Text style={s.footerItem}>Trend: <Text style={{ color:C.green, fontWeight:'700' }}>↗ Rising</Text></Text>
+      </View>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    backgroundColor:C.card, borderRadius:20,
+    borderWidth:1, borderColor:C.border,
+    padding:18, marginBottom:14,
+  },
+  heading: { fontSize:14, fontWeight:'700', color:C.t1, marginBottom:14 },
+  chart:   { flexDirection:'row', alignItems:'flex-end', height:110, gap:8 },
+  col:     { flex:1, alignItems:'center', height:'100%' },
+  tip:     { fontSize:9, fontWeight:'700', marginBottom:4 },
+  barWrap: { flex:1, width:'80%', justifyContent:'flex-end', overflow:'hidden', borderRadius:6 },
+  bar:     { width:'100%', borderRadius:6 },
+  lbl:     { fontSize:9, color:C.t3, marginTop:5 },
+  divider: { height:1, backgroundColor:C.border, marginVertical:10 },
+  footer:  { flexDirection:'row', justifyContent:'space-between' },
+  footerItem: { fontSize:10, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/RankCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+const RANK_STATS = [
+  { n:'8th',  l:'Best Rank',   c:C.gold  },
+  { n:'12th', l:'Avg Rank',    c:C.or    },
+  { n:'60',   l:'Class Size',  c:C.teal  },
+];
+
+export default function RankCard({ rank = 8, total = 60 }) {
+  const barAnim = useRef(new Animated.Value(0)).current;
+  const pct     = ((total - rank) / total) * 100;
+
+  useEffect(() => {
+    Animated.timing(barAnim, {
+      toValue: pct / 100, duration: 800, useNativeDriver: false,
+    }).start();
+  }, []);
+
+  const barWidth = barAnim.interpolate({ inputRange:[0,1], outputRange:['0%','100%'] });
+
+  return (
+    <LinearGradient
+      colors={['rgba(245,158,11,0.15)','rgba(255,140,66,0.08)']}
+      style={s.card}
+    >
+      <View style={s.topBorder} />
+      <View style={s.top}>
+        <View>
+          <Text style={s.eyebrow}>CURRENT CLASS RANK</Text>
+          <Text style={s.rankNum}>#{rank}</Text>
+          <Text style={s.rankOut}>out of {total} students</Text>
+        </View>
+        <Text style={s.trophy}>🏆</Text>
+      </View>
+      <View style={s.barTrack}>
+        <Animated.View style={[s.barFill, { width: barWidth }]} />
+      </View>
+      <Text style={s.barLbl}>Top {Math.round((rank/total)*100)}% of class</Text>
+      <View style={s.statsRow}>
+        {RANK_STATS.map((st, i) => (
+          <View key={i} style={s.statBox}>
+            <Text style={[s.statN, { color:st.c }]}>{st.n}</Text>
+            <Text style={s.statL}>{st.l}</Text>
+          </View>
+        ))}
+      </View>
+    </LinearGradient>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:20, borderWidth:1,
+    borderColor:'rgba(245,158,11,0.22)',
+    padding:18, marginBottom:14, overflow:'hidden',
+  },
+  topBorder: {
+    position:'absolute', top:0, left:0, right:0, height:1,
+    backgroundColor:'rgba(245,158,11,0.5)',
+  },
+  top:       { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:16 },
+  eyebrow:   { fontSize:9, color:'rgba(245,158,11,0.7)', letterSpacing:2, textTransform:'uppercase', marginBottom:4 },
+  rankNum:   { fontSize:44, fontWeight:'900', color:C.gold, lineHeight:48 },
+  rankOut:   { fontSize:12, color:C.t3 },
+  trophy:    { fontSize:44 },
+  barTrack:  { height:8, backgroundColor:'rgba(255,255,255,0.07)', borderRadius:99, overflow:'hidden', marginBottom:6 },
+  barFill:   { height:8, borderRadius:99, backgroundColor:C.gold },
+  barLbl:    { fontSize:10, color:C.t3, marginBottom:14 },
+  statsRow:  { flexDirection:'row', gap:10 },
+  statBox: {
+    flex:1, backgroundColor:'rgba(0,0,0,0.2)',
+    borderRadius:12, padding:10, alignItems:'center',
+    borderWidth:1, borderColor:'rgba(255,255,255,0.05)',
+  },
+  statN:    { fontSize:18, fontWeight:'800' },
+  statL:    { fontSize:9, color:C.t3, marginTop:2 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SemTabs.js
+// ================================================================
+import React from 'react';
+import { ScrollView, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+import { RESULTS } from '../data/resultsData';
+
+export default function SemTabs({ active, onChange }) {
+  return (
+    <ScrollView
+      horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}
+    >
+      {RESULTS.map((r, i) => {
+        const isOn = active === i;
+        return (
+          <TouchableOpacity
+            key={i}
+            style={[s.tab, isOn && s.tabOn]}
+            onPress={() => onChange(i)}
+            activeOpacity={0.75}
+          >
+            <Text style={[s.label, isOn && s.labelOn]}>Sem {i+1}</Text>
+            {!r.sgpa && <View style={s.dot} />}
+          </TouchableOpacity>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  scroll: { marginBottom:14 },
+  row:    { flexDirection:'row', gap:6, paddingBottom:4 },
+  tab: {
+    borderRadius:20, paddingHorizontal:16, paddingVertical:7,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+    position:'relative',
+  },
+  tabOn: { backgroundColor:'rgba(52,211,153,0.14)', borderColor:'rgba(52,211,153,0.35)' },
+  label:   { fontSize:11, fontWeight:'600', color:C.t2 },
+  labelOn: { color:C.green },
+  dot: {
+    position:'absolute', top:4, right:4,
+    width:6, height:6, borderRadius:3, backgroundColor:C.or,
+  },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SemResultCard.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C, gradeColor, gpSymbol, getRemarks } from '../theme/colors';
+
+const COL_HEADERS = ['Subject', 'Cr', 'GP', 'Marks'];
+
+export default function SemResultCard({ result, onSubjectPress }) {
+  const rem = result.sgpa ? getRemarks(result.sgpa) : null;
+
+  return (
+    <View style={s.card}>
+      {/* SEM HEADER */}
+      <LinearGradient
+        colors={['rgba(52,211,153,0.1)','transparent']}
+        style={s.header}
+        start={{x:0,y:0}} end={{x:1,y:0}}
+      >
+        <View>
+          <Text style={s.semTitle}>{result.sem}</Text>
+          <Text style={s.semDate}>{result.date}</Text>
+          {rem && <Text style={[s.remarks, { color:rem.c }]}>{rem.t}</Text>}
+        </View>
+        <View style={s.sgpaWrap}>
+          {result.sgpa ? (
+            <>
+              <Text style={[s.sgpaNum, { color:gradeColor(Math.round(result.sgpa)) }]}>
+                {result.sgpa}
+              </Text>
+              <Text style={s.sgpaLbl}>SGPA</Text>
+              <Text style={s.rankText}>Rank #{result.rank}/{result.total}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={[s.sgpaNum, { color:C.t3, fontSize:18 }]}>—</Text>
+              <Text style={s.sgpaLbl}>Awaited</Text>
+            </>
+          )}
+        </View>
+      </LinearGradient>
+
+      {/* TABLE HEADER */}
+      <View style={[s.tableRow, s.tableHead]}>
+        {COL_HEADERS.map((h, i) => (
+          <Text key={i} style={[s.th, i===0 && s.wide]}>{h}</Text>
+        ))}
+      </View>
+
+      {/* SUBJECT ROWS */}
+      {result.subjects.map((sub, i) => {
+        const gc = sub.gp ? gradeColor(sub.gp) : C.t3;
+        return (
+          <TouchableOpacity
+            key={i}
+            style={[s.tableRow, i < result.subjects.length-1 && s.rowBorder]}
+            onPress={() => onSubjectPress(sub)}
+            activeOpacity={0.75}
+          >
+            <View style={s.wide}>
+              <Text style={s.subName} numberOfLines={1}>{sub.name}</Text>
+              <Text style={s.subCode}>{sub.code}</Text>
+            </View>
+            <Text style={[s.td, { color:C.teal }]}>{sub.credits}</Text>
+            <Text style={[s.td, { color:gc, fontW
