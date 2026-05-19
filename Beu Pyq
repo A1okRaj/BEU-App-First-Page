@@ -1,0 +1,599 @@
+// ================================================================
+//  BEU PYQ (Previous Year Questions) — React Native + Expo
+//  From: React.js Web App → React Native Mobile App
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── data/
+//  │   │   └── pyqData.js
+//  │   ├── components/
+//  │   │   ├── SearchBar.js
+//  │   │   ├── StatsRow.js
+//  │   │   ├── FeaturedCard.js
+//  │   │   ├── FilterRow.js
+//  │   │   ├── PyqCard.js
+//  │   │   ├── PyqModal.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── ToastMessage.js
+//  │   └── screens/
+//  │       └── PyqScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: package.json
+// ================================================================
+/*
+{
+  "name": "beu-pyq",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-status-bar": "~1.12.1",
+    "expo-linear-gradient": "~13.0.2",
+    "react": "18.2.0",
+    "react-native": "0.74.1",
+    "react-native-safe-area-context": "4.10.1",
+    "react-native-screens": "3.31.1"
+  },
+  "devDependencies": { "@babel/core": "^7.24.0" }
+}
+*/
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  red:     '#F87171',
+  blue:    '#60A5FA',
+};
+
+
+
+
+// ================================================================
+// FILE: src/data/pyqData.js
+// ================================================================
+export const SEMS     = ['All','Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'];
+export const YEARS    = ['All Years','2024','2023','2022','2021','2020','2019'];
+export const BRANCHES = ['All','CSE','ECE','ME','CE','EE'];
+export const TYPES    = ['All','End Sem','Mid Sem','Practical','Viva'];
+
+export const PYQS = [
+  {
+    id:1, name:'Data Structures & Algorithms', code:'BCS-301',
+    sem:'Sem 3', branch:'CSE', year:'2024', type:'End Sem',
+    pages:8, size:'2.4 MB', icon:'💻', color:'#A78BFA', isNew:true,
+    topics:['Arrays','Linked List','Trees','Sorting','Graphs'],
+  },
+  {
+    id:2, name:'Engineering Mathematics III', code:'BMA-301',
+    sem:'Sem 3', branch:'CSE', year:'2024', type:'End Sem',
+    pages:6, size:'1.8 MB', icon:'🧮', color:'#2DD4BF', isNew:true,
+    topics:['Laplace','Fourier','Complex Variables','Z-Transform'],
+  },
+  {
+    id:3, name:'Digital Electronics', code:'BEC-302',
+    sem:'Sem 3', branch:'ECE', year:'2023', type:'End Sem',
+    pages:7, size:'2.1 MB', icon:'⚡', color:'#F59E0B', isNew:false,
+    topics:['Logic Gates','Flip Flops','Counters','ADC/DAC'],
+  },
+  {
+    id:4, name:'Operating Systems', code:'BCS-401',
+    sem:'Sem 4', branch:'CSE', year:'2023', type:'End Sem',
+    pages:9, size:'3.1 MB', icon:'🖥️', color:'#F472B6', isNew:false,
+    topics:['Process Scheduling','Memory Mgmt','File Systems','Deadlock'],
+  },
+  {
+    id:5, name:'Computer Networks', code:'BCS-501',
+    sem:'Sem 5', branch:'CSE', year:'2024', type:'Mid Sem',
+    pages:4, size:'1.2 MB', icon:'📡', color:'#34D399', isNew:true,
+    topics:['OSI Model','TCP/IP','Routing','HTTP','DNS'],
+  },
+  {
+    id:6, name:'Fluid Mechanics', code:'BME-301',
+    sem:'Sem 3', branch:'ME', year:'2023', type:'End Sem',
+    pages:8, size:'2.7 MB', icon:'🔧', color:'#FF8C42', isNew:false,
+    topics:['Bernoulli','Flow Analysis','Pumps','Turbines'],
+  },
+  {
+    id:7, name:'Database Management', code:'BCS-402',
+    sem:'Sem 4', branch:'CSE', year:'2024', type:'End Sem',
+    pages:7, size:'2.2 MB', icon:'🗄️', color:'#60A5FA', isNew:true,
+    topics:['SQL','Normalization','Transactions','Indexing'],
+  },
+  {
+    id:8, name:'Theory of Computation', code:'BCS-501',
+    sem:'Sem 5', branch:'CSE', year:'2022', type:'End Sem',
+    pages:6, size:'1.9 MB', icon:'🤖', color:'#8B5CF6', isNew:false,
+    topics:['DFA','NFA','CFG','Turing Machine'],
+  },
+  {
+    id:9, name:'Compiler Design', code:'BCS-601',
+    sem:'Sem 6', branch:'CSE', year:'2023', type:'End Sem',
+    pages:8, size:'2.5 MB', icon:'⚙️', color:'#F59E0B', isNew:false,
+    topics:['Lexical Analysis','Parsing','Code Generation','Optimization'],
+  },
+  {
+    id:10, name:'Engineering Physics', code:'BPH-101',
+    sem:'Sem 1', branch:'All', year:'2024', type:'End Sem',
+    pages:7, size:'2.0 MB', icon:'🔬', color:'#34D399', isNew:true,
+    topics:['Optics','Quantum','Laser','Fiber Optics','Superconductor'],
+  },
+];
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:10 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty      = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue:1, duration:250, useNativeDriver:true }),
+      Animated.timing(ty,      { toValue:0, duration:250, useNativeDriver:true }),
+    ]).start();
+  }, [msg]);
+
+  return (
+    <Animated.View style={[s.toast, { borderColor: color+'40', opacity, transform:[{translateY:ty}] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+
+const s = StyleSheet.create({
+  toast: {
+    position:'absolute', bottom:110, alignSelf:'center',
+    backgroundColor:C.card, borderWidth:1,
+    borderRadius:14, paddingHorizontal:20, paddingVertical:10,
+    zIndex:999, elevation:10,
+    shadowColor:'#000', shadowOpacity:0.4, shadowRadius:12,
+  },
+  text: { fontSize:13, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SearchBar.js
+// ================================================================
+import React from 'react';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SearchBar({ value, onChange }) {
+  return (
+    <View style={s.bar}>
+      <Text style={s.ico}>🔍</Text>
+      <TextInput
+        style={s.input}
+        value={value}
+        onChangeText={onChange}
+        placeholder="Search subject, topic, code..."
+        placeholderTextColor={C.t3}
+        returnKeyType="search"
+      />
+      {!!value && (
+        <TouchableOpacity onPress={() => onChange('')} hitSlop={{ top:8, bottom:8, left:8, right:8 }}>
+          <Text style={s.clear}>✕</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  bar: {
+    flexDirection:'row', alignItems:'center', gap:8,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+    borderRadius:12, paddingHorizontal:14, paddingVertical:10,
+    marginTop:12,
+  },
+  ico:   { fontSize:15, color:C.t3 },
+  input: { flex:1, color:C.t1, fontSize:13 },
+  clear: { fontSize:13, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/StatsRow.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+const STATS = [
+  { n:'10+', l:'Papers',    c:C.p    },
+  { n:'8',   l:'Semesters', c:C.teal  },
+  { n:'5+',  l:'Branches',  c:C.or   },
+];
+
+export default function StatsRow() {
+  return (
+    <View style={s.row}>
+      {STATS.map((st, i) => (
+        <View key={i} style={s.box}>
+          <Text style={[s.n, { color:st.c }]}>{st.n}</Text>
+          <Text style={s.l}>{st.l}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row: { flexDirection:'row', gap:10, marginBottom:14 },
+  box: {
+    flex:1, backgroundColor:C.card,
+    borderRadius:14, borderWidth:1, borderColor:C.border,
+    padding:12, alignItems:'center',
+  },
+  n: { fontSize:22, fontWeight:'800' },
+  l: { fontSize:9, color:C.t3, marginTop:2, textTransform:'uppercase', letterSpacing:0.5 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/FeaturedCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+export default function FeaturedCard({ pyq, onPress }) {
+  const pulse = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue:0.3, duration:750, useNativeDriver:true }),
+        Animated.timing(pulse, { toValue:1,   duration:750, useNativeDriver:true }),
+      ])
+    ).start();
+  }, []);
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={{ marginBottom:14 }}>
+      <LinearGradient
+        colors={['rgba(124,58,237,0.22)','rgba(45,212,191,0.1)']}
+        style={s.card}
+      >
+        <View style={s.topBorder} />
+
+        {/* NEW TAG */}
+        <View style={s.tag}>
+          <Animated.View style={[s.hotDot, { opacity:pulse }]} />
+          <Text style={s.tagText}>NEW · 2024</Text>
+        </View>
+
+        <Text style={s.title}>{pyq.name}</Text>
+        <Text style={s.sub}>{pyq.code} · {pyq.sem} · {pyq.branch} · {pyq.type}</Text>
+
+        <View style={s.row}>
+          <View style={s.chips}>
+            {pyq.topics.slice(0,3).map((t, i) => (
+              <View key={i} style={s.chip}>
+                <Text style={s.chipText}>{t}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={s.btn}>
+            <Text style={s.btnText}>View →</Text>
+          </View>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:20, borderWidth:1,
+    borderColor:'rgba(167,139,250,0.22)',
+    padding:18, overflow:'hidden',
+  },
+  topBorder: {
+    position:'absolute', top:0, left:0, right:0, height:1,
+    backgroundColor:'rgba(167,139,250,0.6)',
+  },
+  tag: {
+    flexDirection:'row', alignItems:'center', gap:5,
+    backgroundColor:'rgba(167,139,250,0.15)',
+    borderWidth:1, borderColor:'rgba(167,139,250,0.28)',
+    borderRadius:6, paddingHorizontal:10, paddingVertical:3,
+    alignSelf:'flex-start', marginBottom:10,
+  },
+  hotDot:  { width:6, height:6, borderRadius:3, backgroundColor:C.p },
+  tagText: { fontSize:9, fontWeight:'700', color:C.p, letterSpacing:1, textTransform:'uppercase' },
+  title:   { fontSize:18, fontWeight:'800', color:C.t1, marginBottom:4 },
+  sub:     { fontSize:12, color:C.t2, marginBottom:14 },
+  row:     { flexDirection:'row', justifyContent:'space-between', alignItems:'center' },
+  chips:   { flexDirection:'row', gap:6, flexWrap:'wrap', flex:1 },
+  chip: {
+    backgroundColor:'rgba(0,0,0,0.3)',
+    borderWidth:1, borderColor:'rgba(255,255,255,0.08)',
+    borderRadius:6, paddingHorizontal:9, paddingVertical:3,
+  },
+  chipText: { fontSize:10, color:C.t2 },
+  btn: {
+    backgroundColor:C.p2, borderRadius:10,
+    paddingHorizontal:16, paddingVertical:8, marginLeft:8,
+  },
+  btnText: { fontSize:12, fontWeight:'700', color:'#fff' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/FilterRow.js
+// ================================================================
+import React from 'react';
+import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function FilterRow({ items, active, onSelect, activeStyle = 'purple' }) {
+  const activeStyles = {
+    purple: { bg:'rgba(167,139,250,0.16)', border:'rgba(167,139,250,0.4)', text:C.p },
+    orange: { bg:'rgba(255,140,66,0.12)',  border:'rgba(255,140,66,0.3)',  text:C.or },
+    teal:   { bg:'rgba(45,212,191,0.1)',   border:'rgba(45,212,191,0.28)', text:C.teal },
+  };
+  const as = activeStyles[activeStyle] || activeStyles.purple;
+
+  return (
+    <ScrollView
+      horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}
+    >
+      {items.map(item => {
+        const isOn = active === item;
+        return (
+          <TouchableOpacity
+            key={item}
+            style={[
+              s.pill,
+              isOn && { backgroundColor:as.bg, borderColor:as.border },
+            ]}
+            onPress={() => onSelect(item)}
+            activeOpacity={0.75}
+          >
+            <Text style={[s.label, isOn && { color:as.text }]}>{item}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  scroll: { marginBottom:10 },
+  row:    { flexDirection:'row', gap:8, paddingBottom:4 },
+  pill: {
+    flexShrink:0, borderRadius:20, paddingHorizontal:16, paddingVertical:7,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+  },
+  label: { fontSize:11, fontWeight:'600', color:C.t2 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/PyqCard.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function PyqCard({ pyq, saved, onView, onDownload, onSave }) {
+  return (
+    <View style={[s.card, { borderLeftColor: pyq.color }]}>
+      {/* TOP */}
+      <View style={s.top}>
+        <View style={[s.ico, { backgroundColor: pyq.color + '20', borderColor: pyq.color + '35' }]}>
+          <Text style={s.icoText}>{pyq.icon}</Text>
+          {pyq.isNew && <View style={s.newBadge}><Text style={s.newText}>NEW</Text></View>}
+        </View>
+        <View style={s.info}>
+          <Text style={s.name} numberOfLines={2}>{pyq.name}</Text>
+          <Text style={s.meta}>{pyq.code} · {pyq.sem} · {pyq.branch}</Text>
+        </View>
+        <View style={s.right}>
+          <Text style={[s.year, { color:C.gold }]}>{pyq.year}</Text>
+          <Text style={s.size}>{pyq.size}</Text>
+          <TouchableOpacity onPress={onSave} hitSlop={{ top:6, bottom:6, left:6, right:6 }}>
+            <Text style={{ fontSize:18 }}>{saved ? '📌' : '🔖'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* TAGS */}
+      <View style={s.tags}>
+        <View style={[s.tag, s.tagHi]}>
+          <Text style={[s.tagText, { color:C.p }]}>{pyq.type}</Text>
+        </View>
+        {pyq.topics.slice(0,3).map((t, i) => (
+          <View key={i} style={s.tag}>
+            <Text style={s.tagText}>{t}</Text>
+          </View>
+        ))}
+        <View style={s.tag}>
+          <Text style={s.tagText}>{pyq.pages} pages</Text>
+        </View>
+      </View>
+
+      {/* ACTIONS */}
+      <View style={s.actions}>
+        <TouchableOpacity style={[s.btn, s.btnView]} onPress={onView} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color:C.p }]}>👁️ View</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[s.btn, s.btnDl]} onPress={onDownload} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color:C.teal }]}>⬇️ Download</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    backgroundColor:C.card, borderRadius:18,
+    borderWidth:1, borderColor:C.border,
+    borderLeftWidth:3, padding:15, marginBottom:10,
+    overflow:'hidden',
+  },
+  top:     { flexDirection:'row', alignItems:'flex-start', gap:12, marginBottom:10 },
+  ico: {
+    width:46, height:46, borderRadius:14,
+    alignItems:'center', justifyContent:'center',
+    borderWidth:1, flexShrink:0,
+  },
+  icoText: { fontSize:22 },
+  newBadge:{
+    position:'absolute', top:-4, right:-4,
+    backgroundColor:C.red, borderRadius:4,
+    paddingHorizontal:3, paddingVertical:1,
+  },
+  newText: { fontSize:7, fontWeight:'800', color:'#fff' },
+  info:    { flex:1 },
+  name:    { fontSize:13, fontWeight:'700', color:C.t1, marginBottom:3, lineHeight:18 },
+  meta:    { fontSize:10, color:C.t3 },
+  right:   { alignItems:'flex-end', gap:4 },
+  year:    { fontSize:12, fontWeight:'800' },
+  size:    { fontSize:9, color:C.t3 },
+  tags:    { flexDirection:'row', gap:6, flexWrap:'wrap', marginBottom:10 },
+  tag: {
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border,
+    borderRadius:6, paddingHorizontal:8, paddingVertical:3,
+  },
+  tagHi: {
+    backgroundColor:'rgba(167,139,250,0.08)',
+    borderColor:'rgba(167,139,250,0.25)',
+  },
+  tagText: { fontSize:9, fontWeight:'600', color:C.t3 },
+  actions: { flexDirection:'row', gap:8 },
+  btn: {
+    flex:1, borderRadius:10, padding:9,
+    alignItems:'center', justifyContent:'center',
+    flexDirection:'row', gap:5, borderWidth:1,
+  },
+  btnView: { backgroundColor:'rgba(167,139,250,0.1)', borderColor:'rgba(167,139,250,0.25)' },
+  btnDl:   { backgroundColor:'rgba(45,212,191,0.08)', borderColor:'rgba(45,212,191,0.22)'  },
+  btnText: { fontSize:12, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/PyqModal.js
+// ================================================================
+import React from 'react';
+import {
+  View, Text, StyleSheet, Modal, TouchableOpacity,
+  ScrollView, Alert,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+const MOCK_PAGES = [1,2,3,4,5];
+
+export default function PyqModal({ pyq, visible, onClose, onDownload }) {
+  if (!pyq || !visible) return null;
+
+  return (
+    <Modal
+      transparent visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity style={s.overlay} activeOpacity={1} onPress={onClose} />
+      <View style={s.sheet}>
+        <View style={s.handle} />
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Text style={s.title}>{pyq.name}</Text>
+          <Text style={s.sub}>{pyq.code} · {pyq.sem} · {pyq.branch} · {pyq.year}</Text>
+
+          {/* PDF PREVIEW */}
+          <View style={s.preview}>
+            <Text style={s.pdfIco}>{pyq.icon}</Text>
+            <Text style={s.pdfName}>{pyq.code}_{pyq.year
