@@ -1,0 +1,576 @@
+// ================================================================
+//  BEU NOTES SHARE APP — React Native + Expo Conversion
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── data/
+//  │   │   └── notesData.js
+//  │   ├── components/
+//  │   │   ├── SearchBar.js
+//  │   │   ├── StatsRow.js
+//  │   │   ├── UploadBanner.js
+//  │   │   ├── TrendingRow.js
+//  │   │   ├── FilterRow.js
+//  │   │   ├── NoteCard.js
+//  │   │   ├── NoteModal.js
+//  │   │   ├── UploadModal.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── ToastMessage.js
+//  │   └── screens/
+//  │       └── NotesScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  red:     '#F87171',
+  blue:    '#60A5FA',
+};
+
+
+
+
+// ================================================================
+// FILE: src/data/notesData.js
+// ================================================================
+export const SUBJECTS = ['All','Mathematics','Data Structures','OS','DBMS','Networks','Digital Electronics','Fluid Mechanics','Java','Compiler Design'];
+export const SEMS     = ['All Sems','Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6'];
+export const TYPES    = ['All','Handwritten','Typed','Slides','Assignment','Lab Manual'];
+
+export const NOTES = [
+  {
+    id:1, title:'Complete DSA Notes — Arrays to Graphs',
+    subject:'Data Structures', sem:'Sem 3', type:'Handwritten',
+    pages:120, size:'8.2 MB', icon:'💻', color:'#A78BFA',
+    uploader:'Rahul Kumar', college:'GCE Munger',
+    rating:'4.9 ⭐', downloads:234, isNew:true,
+    topics:['Arrays','Linked List','Stack','Queue','Trees','Graphs','Sorting','Searching'],
+  },
+  {
+    id:2, title:'OS Complete — Process to File System',
+    subject:'Operating Systems', sem:'Sem 4', type:'Typed',
+    pages:85, size:'5.1 MB', icon:'🖥️', color:'#2DD4BF',
+    uploader:'Priya Singh', college:'BCE Bakhtiyarpur',
+    rating:'4.7 ⭐', downloads:189, isNew:true,
+    topics:['Process','Threads','CPU Scheduling','Memory','Deadlock','File System'],
+  },
+  {
+    id:3, title:'Engineering Maths III — Full Notes',
+    subject:'Mathematics', sem:'Sem 3', type:'Handwritten',
+    pages:95, size:'6.8 MB', icon:'🧮', color:'#FF8C42',
+    uploader:'Aditya Raj', college:'BIT Patna',
+    rating:'4.8 ⭐', downloads:312, isNew:false,
+    topics:['Laplace','Fourier Series','Complex Variables','Z-Transform','PDE'],
+  },
+  {
+    id:4, title:'DBMS — ER to SQL Complete',
+    subject:'DBMS', sem:'Sem 4', type:'Typed',
+    pages:70, size:'4.3 MB', icon:'🗄️', color:'#F472B6',
+    uploader:'Sneha Kumari', college:'GEC Vaishali',
+    rating:'4.6 ⭐', downloads:156, isNew:false,
+    topics:['ER Model','Normalization','SQL','Transactions','Indexing','NoSQL'],
+  },
+  {
+    id:5, title:'Java OOP — Complete with Programs',
+    subject:'Java', sem:'Sem 3', type:'Handwritten',
+    pages:110, size:'7.5 MB', icon:'☕', color:'#F59E0B',
+    uploader:'Vikash Sinha', college:'BCE Bakhtiyarpur',
+    rating:'4.9 ⭐', downloads:278, isNew:true,
+    topics:['Classes','Inheritance','Polymorphism','Exception','Collections','Threads'],
+  },
+  {
+    id:6, title:'Computer Networks — OSI to TCP/IP',
+    subject:'Networks', sem:'Sem 5', type:'Slides',
+    pages:60, size:'3.9 MB', icon:'📡', color:'#34D399',
+    uploader:'Amit Kumar', college:'GCE Munger',
+    rating:'4.5 ⭐', downloads:143, isNew:false,
+    topics:['OSI','TCP/IP','Routing','DNS','HTTP','Security'],
+  },
+];
+
+export const TRENDING = [
+  { ico:'💻', name:'DSA Notes',  dl:'234 downloads', color:'#A78BFA' },
+  { ico:'🧮', name:'Maths III',  dl:'312 downloads', color:'#FF8C42' },
+  { ico:'☕', name:'Java OOP',   dl:'278 downloads', color:'#F59E0B' },
+  { ico:'🖥️', name:'OS Notes',   dl:'189 downloads', color:'#2DD4BF' },
+];
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:10 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty      = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue:1, duration:250, useNativeDriver:true }),
+      Animated.timing(ty,      { toValue:0, duration:250, useNativeDriver:true }),
+    ]).start();
+  }, [msg]);
+
+  return (
+    <Animated.View style={[s.toast, { borderColor:color+'40', opacity, transform:[{translateY:ty}] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+
+const s = StyleSheet.create({
+  toast: {
+    position:'absolute', bottom:110, alignSelf:'center',
+    backgroundColor:C.card, borderWidth:1,
+    borderRadius:14, paddingHorizontal:20, paddingVertical:10,
+    zIndex:999, elevation:10,
+  },
+  text: { fontSize:13, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SearchBar.js
+// ================================================================
+import React from 'react';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SearchBar({ value, onChange, accentColor = C.pink }) {
+  return (
+    <View style={[s.bar, value.length > 0 && { borderColor: accentColor + '66' }]}>
+      <Text style={s.ico}>🔍</Text>
+      <TextInput
+        style={s.input}
+        value={value}
+        onChangeText={onChange}
+        placeholder="Search notes, topics, subject..."
+        placeholderTextColor={C.t3}
+        returnKeyType="search"
+      />
+      {!!value && (
+        <TouchableOpacity onPress={() => onChange('')} hitSlop={{ top:8, bottom:8, left:8, right:8 }}>
+          <Text style={s.clear}>✕</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  bar: {
+    flexDirection:'row', alignItems:'center', gap:8,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+    borderRadius:12, paddingHorizontal:14, paddingVertical:10,
+    marginTop:12,
+  },
+  ico:   { fontSize:15, color:C.t3 },
+  input: { flex:1, color:C.t1, fontSize:13 },
+  clear: { fontSize:13, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/StatsRow.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+const STATS = [
+  { n:'6+',   l:'Notes',     c:C.pink },
+  { n:'500+', l:'Downloads', c:C.p    },
+  { n:'50+',  l:'Uploaders', c:C.teal },
+];
+
+export default function StatsRow() {
+  return (
+    <View style={s.row}>
+      {STATS.map((st, i) => (
+        <View key={i} style={s.box}>
+          <Text style={[s.n, { color:st.c }]}>{st.n}</Text>
+          <Text style={s.l}>{st.l}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row: { flexDirection:'row', gap:10, marginBottom:14 },
+  box: {
+    flex:1, backgroundColor:C.card,
+    borderRadius:14, borderWidth:1, borderColor:C.border,
+    padding:12, alignItems:'center',
+  },
+  n: { fontSize:22, fontWeight:'800' },
+  l: { fontSize:9, color:C.t3, marginTop:2, textTransform:'uppercase', letterSpacing:0.5 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/UploadBanner.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+const FILE_TYPES = ['PDF', 'Images', 'PPT', 'Word'];
+
+export default function UploadBanner({ onPress }) {
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={{ marginBottom:14 }}>
+      <LinearGradient
+        colors={['rgba(244,114,182,0.15)','rgba(167,139,250,0.1)']}
+        style={s.card}
+      >
+        <Text style={s.ico}>📤</Text>
+        <Text style={s.title}>Share Your Notes</Text>
+        <Text style={s.sub}>Help fellow BEU students — upload your handwritten or typed notes!</Text>
+        <View style={s.btn}>
+          <Text style={s.btnText}>📎 Upload Notes</Text>
+        </View>
+        <View style={s.typesRow}>
+          {FILE_TYPES.map(t => (
+            <View key={t} style={s.typeChip}>
+              <Text style={s.typeText}>{t}</Text>
+            </View>
+          ))}
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:20,
+    borderWidth:1.5, borderColor:'rgba(244,114,182,0.35)',
+    borderStyle:'dashed',
+    padding:22, alignItems:'center',
+  },
+  ico:      { fontSize:38, marginBottom:10 },
+  title:    { fontSize:16, fontWeight:'700', color:C.t1, marginBottom:4 },
+  sub:      { fontSize:12, color:C.t2, textAlign:'center', marginBottom:14, lineHeight:18 },
+  btn: {
+    backgroundColor:'rgba(244,114,182,0.15)',
+    borderWidth:1, borderColor:'rgba(244,114,182,0.3)',
+    borderRadius:10, paddingHorizontal:20, paddingVertical:9, marginBottom:12,
+  },
+  btnText:  { fontSize:13, fontWeight:'700', color:C.pink },
+  typesRow: { flexDirection:'row', gap:8, flexWrap:'wrap', justifyContent:'center' },
+  typeChip: {
+    backgroundColor:'rgba(0,0,0,0.2)', borderWidth:1, borderColor:C.border,
+    borderRadius:6, paddingHorizontal:9, paddingVertical:3,
+  },
+  typeText: { fontSize:9, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/TrendingRow.js
+// ================================================================
+import React from 'react';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { C } from '../theme/colors';
+import { TRENDING } from '../data/notesData';
+
+export default function TrendingRow() {
+  return (
+    <ScrollView
+      horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}
+    >
+      {TRENDING.map((t, i) => (
+        <TouchableOpacity key={i} style={[s.card, { borderColor: t.color + '30' }]} activeOpacity={0.8}>
+          <Text style={s.ico}>{t.ico}</Text>
+          <Text style={[s.name, { color: t.color }]}>{t.name}</Text>
+          <Text style={s.meta}>Community Notes</Text>
+          <Text style={[s.dl, { color: t.color }]}>⬇️ {t.dl}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  scroll: { marginBottom:14 },
+  row:    { flexDirection:'row', gap:10, paddingBottom:4 },
+  card: {
+    width:136, backgroundColor:C.card,
+    borderRadius:16, borderWidth:1, padding:14,
+  },
+  ico:  { fontSize:28, marginBottom:8 },
+  name: { fontSize:12, fontWeight:'700', marginBottom:3, lineHeight:17 },
+  meta: { fontSize:9, color:C.t3 },
+  dl:   { fontSize:10, fontWeight:'600', marginTop:6 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/FilterRow.js
+// ================================================================
+import React from 'react';
+import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function FilterRow({ items, active, onSelect, activeColor = C.pink }) {
+  return (
+    <ScrollView
+      horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}
+    >
+      {items.map(item => {
+        const isOn = active === item;
+        return (
+          <TouchableOpacity
+            key={item}
+            style={[s.pill, isOn && {
+              backgroundColor: activeColor + '22',
+              borderColor:     activeColor + '55',
+            }]}
+            onPress={() => onSelect(item)}
+            activeOpacity={0.75}
+          >
+            <Text style={[s.label, isOn && { color: activeColor }]}>{item}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  scroll: { marginBottom:10 },
+  row:    { flexDirection:'row', gap:7, paddingBottom:4 },
+  pill: {
+    borderRadius:20, paddingHorizontal:14, paddingVertical:7,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+  },
+  label: { fontSize:11, fontWeight:'600', color:C.t2 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/NoteCard.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function NoteCard({ note, saved, onPress, onSave, onView, onDownload, onShare }) {
+  const { icon, color, title, subject, sem, type, pages, size,
+          uploader, college, rating, downloads, topics, isNew } = note;
+
+  return (
+    <TouchableOpacity style={s.card} onPress={onPress} activeOpacity={0.85}>
+      {/* LEFT STRIPE */}
+      <View style={[s.stripe, { backgroundColor: color }]} />
+
+      {/* TOP ROW */}
+      <View style={s.top}>
+        <View style={[s.ico, { backgroundColor: color + '20', borderColor: color + '30' }]}>
+          <Text style={s.icoText}>{icon}</Text>
+        </View>
+        <View style={s.info}>
+          <Text style={s.title} numberOfLines={2}>{title}</Text>
+          <Text style={s.meta}>{subject} · {sem} · {type}</Text>
+        </View>
+        <View style={s.right}>
+          <Text style={[s.pages, { color: C.gold }]}>{pages}pg</Text>
+          <Text style={s.size}>{size}</Text>
+          <TouchableOpacity onPress={onSave} hitSlop={{ top:6, bottom:6, left:6, right:6 }}>
+            <Text style={{ fontSize:18 }}>{saved ? '🔖' : '📄'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* TAGS */}
+      <View style={s.tags}>
+        <View style={[s.tag, s.tagHi]}>
+          <Text style={[s.tagText, { color: C.pink }]}>{sem}</Text>
+        </View>
+        <View style={[s.tag, s.tagHi]}>
+          <Text style={[s.tagText, { color: C.pink }]}>{type}</Text>
+        </View>
+        {topics.slice(0,3).map((t, i) => (
+          <View key={i} style={s.tag}>
+            <Text style={s.tagText}>{t}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* UPLOADER */}
+      <View style={s.uploader}>
+        <View style={[s.avatar, { backgroundColor: color + '25' }]}>
+          <Text style={[s.avatarText, { color }]}>{uploader[0]}</Text>
+        </View>
+        <Text style={s.uploaderName}>{uploader}</Text>
+        <Text style={s.uploaderCollege}>{college}</Text>
+        <Text style={s.rating}>{rating}</Text>
+      </View>
+
+      {/* ACTIONS */}
+      <View style={s.actions}>
+        <TouchableOpacity style={[s.btn, s.btnView]} onPress={onView} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color: C.p }]}>👁️ View</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[s.btn, s.btnDl]} onPress={onDownload} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color: C.teal }]}>⬇️ Download</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[s.btn, s.btnShare]} onPress={onShare} activeOpacity={0.75}>
+          <Text style={[s.btnText, { color: C.pink }]}>↗️ Share</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    backgroundColor:C.card, borderRadius:18,
+    borderWidth:1, borderColor:C.border,
+    padding:15, marginBottom:10, overflow:'hidden',
+  },
+  stripe:  { position:'absolute', top:0, left:0, bottom:0, width:3 },
+  top:     { flexDirection:'row', alignItems:'flex-start', gap:12, marginBottom:10 },
+  ico: {
+    width:46, height:46, borderRadius:13,
+    alignItems:'center', justifyContent:'center', borderWidth:1,
+  },
+  icoText: { fontSize:22 },
+  info:    { flex:1 },
+  title:   { fontSize:14, fontWeight:'700', color:C.t1, marginBottom:3, lineHeight:19 },
+  meta:    { fontSize:10, color:C.t3 },
+  right:   { alignItems:'flex-end', gap:4 },
+  pages:   { fontSize:11, fontWeight:'700' },
+  size:    { fontSize:9, color:C.t3 },
+
+  tags:    { flexDirection:'row', gap:6, flexWrap:'wrap', marginBottom:10 },
+  tag: {
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border,
+    borderRadius:6, paddingHorizontal:8, paddingVertical:3,
+  },
+  tagHi: {
+    backgroundColor:'rgba(244,114,182,0.08)',
+    borderColor:'rgba(244,114,182,0.22)',
+  },
+  tagText: { fontSize:9, fontWeight:'600', color:C.t3 },
+
+  uploader:      { flexDirection:'row', alignItems:'center', gap:8, marginBottom:10 },
+  avatar: {
+    width:24, height:24, borderRadius:7,
+    alignItems:'center', justifyContent:'center',
+  },
+  avatarText:    { fontSize:11, fontWeight:'800' },
+  uploaderName:  { fontSize:11, fontWeight:'600', color:C.t1 },
+  uploaderCollege:{ fontSize:9, color:C.t3, marginLeft:2, flex:1 },
+  rating:        { fontSize:11, color:C.gold },
+
+  actions: { flexDirection:'row', gap:7 },
+  btn: {
+    flex:1, borderRadius:10, padding:9,
+    alignItems:'center', justifyContent:'center', borderWidth:1,
+  },
+  btnView:  { backgroundColor:'rgba(167,139,250,0.1)',  borderColor:'rgba(167,139,250,0.22)'  },
+  btnDl:    { backgroundColor:'rgba(45,212,191,0.09)',  borderColor:'rgba(45,212,191,0.22)'   },
+  btnShare: { backgroundColor:'rgba(244,114,182,0.08)', borderColor:'rgba(244,114,182,0.2)'   },
+  btnText:  { fontSize:11, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/NoteModal.js
+// ================================================================
+import React from 'react';
+import {
+  View, Text, StyleSheet, Modal,
+  TouchableOpacity, ScrollView, Alert,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+
+export default function NoteModal({ note, visible, onClose, onDownload }) {
+  if (!note || !visible) return null;
+
+  const CHIPS = [note.sem, note.type, `${note.pages} pages`, note.size, `⬇️ ${note.downloads}`];
+
+  return (
+    <Modal transparent visible={visible} animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={s.overlay} activeO
