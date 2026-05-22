@@ -1,0 +1,486 @@
+// ================================================================
+//  BEU TIMETABLE APP — React Native + Expo Conversion
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/
+//  │   │   └── colors.js
+//  │   ├── data/
+//  │   │   └── timetableData.js
+//  │   ├── components/
+//  │   │   ├── TodayCard.js
+//  │   │   ├── DayTabs.js
+//  │   │   ├── PeriodList.js
+//  │   │   ├── WeekOverview.js
+//  │   │   ├── AddClassModal.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── ToastMessage.js
+//  │   └── screens/
+//  │       └── TimetableScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:      '#0A0812',
+  bg2:     '#0F0C1A',
+  card:    '#16132A',
+  card2:   '#1E1A35',
+  card3:   '#252040',
+  border:  'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.13)',
+  t1:      '#F5F0FF',
+  t2:      'rgba(245,240,255,0.6)',
+  t3:      'rgba(245,240,255,0.25)',
+  p:       '#A78BFA',
+  p2:      '#7C3AED',
+  or:      '#FF8C42',
+  teal:    '#2DD4BF',
+  pink:    '#F472B6',
+  gold:    '#F59E0B',
+  green:   '#34D399',
+  red:     '#F87171',
+  blue:    '#60A5FA',
+};
+
+export const CLASS_COLORS = [
+  '#A78BFA','#FF8C42','#2DD4BF','#F472B6',
+  '#34D399','#F59E0B','#60A5FA','#FB923C',
+];
+
+export const DAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+export const DAYS_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+
+
+
+// ================================================================
+// FILE: src/data/timetableData.js
+// ================================================================
+export const TIMETABLE = {
+  0:[
+    { id:1,  name:'Discrete Mathematics',    code:'BMA-301', teacher:'Dr. R. Sharma',  room:'LH-201', start:'8:00',  end:'9:00',  color:'#A78BFA', type:'Theory'    },
+    { id:2,  name:'BREAK',                   type:'break',   start:'9:00',  end:'9:15',  duration:'15 min' },
+    { id:3,  name:'OOP with Java',           code:'BCS-302', teacher:'Prof. A. Kumar', room:'LH-203', start:'9:15',  end:'10:15', color:'#F59E0B', type:'Theory'    },
+    { id:4,  name:'Computer Org. & Arch.',   code:'BCS-303', teacher:'Dr. S. Singh',   room:'LH-202', start:'10:15', end:'11:15', color:'#2DD4BF', type:'Theory'    },
+    { id:5,  name:'LUNCH',                   type:'break',   start:'11:15', end:'12:00', duration:'45 min' },
+    { id:6,  name:'Java Lab',                code:'BCS-302L',teacher:'Prof. A. Kumar', room:'Lab-1',  start:'12:00', end:'14:00', color:'#F59E0B', type:'Practical' },
+  ],
+  1:[
+    { id:7,  name:'Operating Systems',       code:'BCS-304', teacher:'Dr. P. Verma',   room:'LH-201', start:'8:00',  end:'9:00',  color:'#F472B6', type:'Theory'    },
+    { id:8,  name:'DBMS',                    code:'BCS-305', teacher:'Prof. M. Roy',   room:'LH-202', start:'9:00',  end:'10:00', color:'#34D399', type:'Theory'    },
+    { id:9,  name:'BREAK',                   type:'break',   start:'10:00', end:'10:15', duration:'15 min' },
+    { id:10, name:'Software Engineering',    code:'BCS-306', teacher:'Dr. K. Jha',     room:'LH-203', start:'10:15', end:'11:15', color:'#60A5FA', type:'Theory'    },
+    { id:11, name:'LUNCH',                   type:'break',   start:'11:15', end:'12:00', duration:'45 min' },
+    { id:12, name:'DBMS Lab',                code:'BCS-305L',teacher:'Prof. M. Roy',   room:'Lab-2',  start:'12:00', end:'14:00', color:'#34D399', type:'Practical' },
+  ],
+  2:[
+    { id:13, name:'Discrete Mathematics',    code:'BMA-301', teacher:'Dr. R. Sharma',  room:'LH-201', start:'8:00',  end:'9:00',  color:'#A78BFA', type:'Theory'    },
+    { id:14, name:'OOP with Java',           code:'BCS-302', teacher:'Prof. A. Kumar', room:'LH-203', start:'9:00',  end:'10:00', color:'#F59E0B', type:'Theory'    },
+    { id:15, name:'BREAK',                   type:'break',   start:'10:00', end:'10:15', duration:'15 min' },
+    { id:16, name:'Computer Networks',       code:'BCS-307', teacher:'Dr. N. Prasad',  room:'LH-202', start:'10:15', end:'11:15', color:'#FF8C42', type:'Theory'    },
+    { id:17, name:'LUNCH',                   type:'break',   start:'11:15', end:'12:00', duration:'45 min' },
+    { id:18, name:'Library / Self Study',    code:'',        teacher:'',               room:'Library',start:'12:00', end:'13:00', color:'#8B5CF6', type:'Free'      },
+  ],
+  3:[
+    { id:19, name:'Operating Systems',       code:'BCS-304', teacher:'Dr. P. Verma',   room:'LH-201', start:'8:00',  end:'9:00',  color:'#F472B6', type:'Theory'    },
+    { id:20, name:'BREAK',                   type:'break',   start:'9:00',  end:'9:15',  duration:'15 min' },
+    { id:21, name:'DBMS',                    code:'BCS-305', teacher:'Prof. M. Roy',   room:'LH-202', start:'9:15',  end:'10:15', color:'#34D399', type:'Theory'    },
+    { id:22, name:'Software Engineering',    code:'BCS-306', teacher:'Dr. K. Jha',     room:'LH-203', start:'10:15', end:'11:15', color:'#60A5FA', type:'Theory'    },
+    { id:23, name:'LUNCH',                   type:'break',   start:'11:15', end:'12:00', duration:'45 min' },
+    { id:24, name:'OS Lab',                  code:'BCS-304L',teacher:'Dr. P. Verma',   room:'Lab-3',  start:'12:00', end:'14:00', color:'#F472B6', type:'Practical' },
+  ],
+  4:[
+    { id:25, name:'Discrete Mathematics',    code:'BMA-301', teacher:'Dr. R. Sharma',  room:'LH-201', start:'8:00',  end:'9:00',  color:'#A78BFA', type:'Theory'    },
+    { id:26, name:'Computer Org. & Arch.',   code:'BCS-303', teacher:'Dr. S. Singh',   room:'LH-202', start:'9:00',  end:'10:00', color:'#2DD4BF', type:'Theory'    },
+    { id:27, name:'BREAK',                   type:'break',   start:'10:00', end:'10:15', duration:'15 min' },
+    { id:28, name:'OOP with Java',           code:'BCS-302', teacher:'Prof. A. Kumar', room:'LH-203', start:'10:15', end:'11:15', color:'#F59E0B', type:'Theory'    },
+    { id:29, name:'LUNCH',                   type:'break',   start:'11:15', end:'12:00', duration:'45 min' },
+    { id:30, name:'Extra Class / Tutorial',  code:'',        teacher:'Faculty',         room:'LH-201', start:'12:00', end:'13:00', color:'#8B5CF6', type:'Tutorial'  },
+  ],
+  5:[
+    { id:31, name:'DBMS',                    code:'BCS-305', teacher:'Prof. M. Roy',   room:'LH-202', start:'9:00',  end:'10:00', color:'#34D399', type:'Theory'    },
+    { id:32, name:'Software Engineering',    code:'BCS-306', teacher:'Dr. K. Jha',     room:'LH-203', start:'10:00', end:'11:00', color:'#60A5FA', type:'Theory'    },
+    { id:33, name:'BREAK',                   type:'break',   start:'11:00', end:'11:15', duration:'15 min' },
+    { id:34, name:'Project / Self Study',    code:'',        teacher:'',               room:'Lab-4',  start:'11:15', end:'13:00', color:'#FF8C42', type:'Project'   },
+  ],
+};
+
+export const WEEK_SUBS   = ['Disc.Math','Java','OS','DBMS','SE','Networks'];
+export const WEEK_COLORS = ['#A78BFA','#F59E0B','#F472B6','#34D399','#60A5FA','#FF8C42'];
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:10 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty      = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue:1, duration:250, useNativeDriver:true }),
+      Animated.timing(ty,      { toValue:0, duration:250, useNativeDriver:true }),
+    ]).start();
+  }, [msg]);
+
+  return (
+    <Animated.View style={[s.toast, { borderColor:color+'50', opacity, transform:[{translateY:ty}] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+
+const s = StyleSheet.create({
+  toast: {
+    position:'absolute', bottom:110, alignSelf:'center',
+    backgroundColor:C.card, borderWidth:1,
+    borderRadius:14, paddingHorizontal:20, paddingVertical:10,
+    zIndex:999, elevation:10,
+  },
+  text: { fontSize:13, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/TodayCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C, DAYS_FULL } from '../theme/colors';
+
+export default function TodayCard({ todayIdx, todayClasses, nextClass, isNowFn }) {
+  const pulse = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue:0.5, duration:800, useNativeDriver:true }),
+        Animated.timing(pulse, { toValue:1,   duration:800, useNativeDriver:true }),
+      ])
+    ).start();
+  }, []);
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+
+  return (
+    <LinearGradient
+      colors={['rgba(45,212,191,0.18)','rgba(167,139,250,0.1)']}
+      style={s.card}
+    >
+      <View style={s.topBorder} />
+      <View style={s.topRow}>
+        <View>
+          <Text style={s.dayLabel}>📅 Today — {DAYS_FULL[todayIdx]}</Text>
+          <Text style={s.date}>{dateStr}</Text>
+          <Text style={s.sem}>3rd Semester · BEU</Text>
+        </View>
+        <View style={s.nextWrap}>
+          <Text style={s.nextLbl}>Next Class</Text>
+          <Text style={s.nextName} numberOfLines={1}>
+            {nextClass ? nextClass.name.split(' ')[0] : 'Done ✓'}
+          </Text>
+          <Text style={s.nextTime}>
+            {nextClass ? `at ${nextClass.start}` : 'All done!'}
+          </Text>
+        </View>
+      </View>
+
+      <View style={s.classes}>
+        {todayClasses.map((p, i) => {
+          const now = isNowFn(p);
+          return (
+            <View key={i} style={[s.classRow, now && s.classRowNow]}>
+              {now && <View style={s.nowBar} />}
+              <Text style={s.classTime}>{p.start}</Text>
+              <View style={[s.dot, { backgroundColor:p.color }]} />
+              <View style={s.classInfo}>
+                <Text style={s.className}>{p.name}</Text>
+                <Text style={s.classSub}>{p.code} · {p.teacher}</Text>
+              </View>
+              <Text style={s.classRoom}>{p.room}</Text>
+              {now && (
+                <Animated.View style={[s.nowBadge, { opacity:pulse }]}>
+                  <Text style={s.nowBadgeText}>NOW</Text>
+                </Animated.View>
+              )}
+            </View>
+          );
+        })}
+      </View>
+    </LinearGradient>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:22, borderWidth:1,
+    borderColor:'rgba(45,212,191,0.22)',
+    padding:18, marginBottom:14, overflow:'hidden',
+  },
+  topBorder: {
+    position:'absolute', top:0, left:0, right:0, height:1,
+    backgroundColor:'rgba(45,212,191,0.6)',
+  },
+  topRow:    { flexDirection:'row', justifyContent:'space-between', alignItems:'flex-start', marginBottom:14 },
+  dayLabel:  { fontSize:13, color:C.teal, fontWeight:'600', marginBottom:3 },
+  date:      { fontSize:22, fontWeight:'800', color:C.t1 },
+  sem:       { fontSize:11, color:C.t2, marginTop:2 },
+  nextWrap:  { alignItems:'flex-end' },
+  nextLbl:   { fontSize:9, color:C.t3, textTransform:'uppercase', letterSpacing:0.5, marginBottom:3 },
+  nextName:  { fontSize:14, fontWeight:'700', color:C.teal, maxWidth:110 },
+  nextTime:  { fontSize:10, color:C.t2, marginTop:2 },
+  classes:   { gap:8 },
+  classRow: {
+    backgroundColor:'rgba(0,0,0,0.25)', borderRadius:12,
+    padding:12, flexDirection:'row', alignItems:'center', gap:12,
+    borderWidth:1, borderColor:'rgba(255,255,255,0.05)', overflow:'hidden',
+  },
+  classRowNow: {
+    borderColor:'rgba(45,212,191,0.35)',
+    backgroundColor:'rgba(45,212,191,0.08)',
+  },
+  nowBar:    { position:'absolute', top:0, left:0, bottom:0, width:3, backgroundColor:C.teal },
+  classTime: { fontSize:10, color:C.t3, width:44, fontWeight:'600' },
+  dot:       { width:8, height:8, borderRadius:4 },
+  classInfo: { flex:1 },
+  className: { fontSize:13, fontWeight:'700', color:C.t1 },
+  classSub:  { fontSize:10, color:C.t3, marginTop:1 },
+  classRoom: { fontSize:10, fontWeight:'600', color:C.t2 },
+  nowBadge: {
+    backgroundColor:'rgba(45,212,191,0.15)',
+    borderWidth:1, borderColor:'rgba(45,212,191,0.3)',
+    borderRadius:6, paddingHorizontal:8, paddingVertical:2,
+  },
+  nowBadgeText: { fontSize:9, fontWeight:'700', color:C.teal },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/DayTabs.js
+// ================================================================
+import React from 'react';
+import { ScrollView, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { C, DAYS_SHORT } from '../theme/colors';
+
+const TODAY_IDX = Math.min(new Date().getDay() === 0 ? 0 : new Date().getDay() - 1, 5);
+
+export default function DayTabs({ active, onChange }) {
+  return (
+    <ScrollView
+      horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}
+    >
+      {DAYS_SHORT.map((d, i) => {
+        const isOn    = active === i;
+        const isToday = i === TODAY_IDX;
+        return (
+          <TouchableOpacity
+            key={i}
+            style={[s.tab, isOn && s.tabOn]}
+            onPress={() => onChange(i)}
+            activeOpacity={0.75}
+          >
+            <Text style={[s.dayLbl, isOn && s.dayLblOn]}>{d}</Text>
+            <Text style={[s.dateLbl, isOn && { color:C.teal }]}>
+              {isToday ? 'Today' : `Apr ${20+i}`}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  scroll: { marginBottom:14 },
+  row:    { flexDirection:'row', gap:6, paddingBottom:4 },
+  tab: {
+    borderRadius:14, paddingHorizontal:14, paddingVertical:10,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+    alignItems:'center', minWidth:60,
+  },
+  tabOn:   { backgroundColor:'rgba(45,212,191,0.14)', borderColor:'rgba(45,212,191,0.35)' },
+  dayLbl:  { fontSize:11, fontWeight:'700', color:C.t2 },
+  dayLblOn:{ color:C.teal },
+  dateLbl: { fontSize:8, color:C.t3, marginTop:2 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/PeriodList.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { C } from '../theme/colors';
+
+const TYPE_STYLES = {
+  Theory:    { bg:'rgba(167,139,250,0.12)', color:'#A78BFA' },
+  Practical: { bg:'rgba(45,212,191,0.12)',  color:'#2DD4BF'  },
+  Free:      { bg:'rgba(139,92,246,0.12)',  color:'#8B5CF6'  },
+  Tutorial:  { bg:'rgba(255,140,66,0.12)',  color:'#FF8C42'  },
+  Project:   { bg:'rgba(255,140,66,0.12)',  color:'#FF8C42'  },
+};
+
+function BreakCard({ period }) {
+  return (
+    <View style={s.breakCard}>
+      <Text style={s.breakIco}>{period.name === 'LUNCH' ? '🍽️' : '☕'}</Text>
+      <Text style={s.breakTitle}>{period.name}</Text>
+      <Text style={s.breakDur}>{period.start} – {period.end} · {period.duration}</Text>
+    </View>
+  );
+}
+
+function PeriodCard({ period, isNow }) {
+  const ts = TYPE_STYLES[period.type] || TYPE_STYLES.Theory;
+  return (
+    <TouchableOpacity style={[s.period, isNow && s.periodNow]} activeOpacity={0.8}>
+      <View style={[s.leftBar, { backgroundColor: period.color }]} />
+
+      {/* TIME COL */}
+      <View style={s.timeCol}>
+        <Text style={s.timeStart}>{period.start}</Text>
+        <View style={s.timeLine} />
+        <Text style={s.timeEnd}>{period.end}</Text>
+      </View>
+
+      {/* BODY */}
+      <View style={s.body}>
+        <View style={s.bodyTop}>
+          <View style={s.bodyLeft}>
+            <Text style={s.subjectName} numberOfLines={1}>{period.name}</Text>
+            {!!period.code && <Text style={s.subjectCode}>{period.code}</Text>}
+          </View>
+          <View style={s.bodyRight}>
+            <View style={s.roomBadge}>
+              <Text style={s.roomText}>{period.room}</Text>
+            </View>
+            <View style={[s.typeBadge, { backgroundColor:ts.bg }]}>
+              <Text style={[s.typeText, { color:ts.color }]}>{period.type}</Text>
+            </View>
+          </View>
+        </View>
+
+        {!!period.teacher && (
+          <View style={s.teacherRow}>
+            <View style={[s.teacherAv, { backgroundColor:period.color+'25' }]}>
+              <Text style={[s.teacherAvText, { color:period.color }]}>
+                {period.teacher.replace('Dr. ','').replace('Prof. ','')[0]}
+              </Text>
+            </View>
+            <Text style={s.teacherName}>{period.teacher}</Text>
+            {isNow && (
+              <View style={s.nowBadge}>
+                <Text style={s.nowBadgeText}>● NOW</Text>
+              </View>
+            )}
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+export default function PeriodList({ periods, isNowFn }) {
+  if (!periods || periods.length === 0) {
+    return (
+      <View style={s.empty}>
+        <Text style={s.emptyIco}>📅</Text>
+        <Text style={s.emptyText}>No classes today!</Text>
+        <Text style={s.emptySub}>Enjoy your day off 🎉</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={s.list}>
+      {periods.map((p, i) =>
+        p.type === 'break'
+          ? <BreakCard key={p.id || i} period={p} />
+          : <PeriodCard key={p.id || i} period={p} isNow={isNowFn(p)} />
+      )}
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  list:      { gap:10, marginBottom:14 },
+  breakCard: {
+    backgroundColor:C.card2, borderRadius:12,
+    borderWidth:1, borderColor:C.border2, borderStyle:'dashed',
+    padding:11, flexDirection:'row', alignItems:'center',
+    gap:10, opacity:0.75,
+  },
+  breakIco:  { fontSize:18 },
+  breakTitle:{ fontSize:12, fontWeight:'600', color:C.t3, flex:1 },
+  breakDur:  { fontSize:10, color:C.t3 },
+
+  period: {
+    backgroundColor:C.card, borderRadius:16,
+    borderWidth:1, borderColor:C.border,
+    padding:14, flexDirection:'row', gap:12,
+    overflow:'hidden',
+  },
+  periodNow: { borderColor:'rgba(45,212,191,0.35)' },
+  leftBar: {
+    position:'absolute', top:0, left:0, bottom:0,
+    width:3, borderRadius:2,
+  },
+  timeCol:   { alignItems:'center', minWidth:46, paddingLeft:6 },
+  timeStart: { fontSize:12, fontWeight:'700', color:C.t1 },
+  timeLine:  { flex:1, width:1, backgroundColor:C.border2, marginVertical:3 },
+  timeEnd:   { fontSize:10, color:C.t3 },
+
+  body:      { flex:1 },
+  bodyTop:   { flexDirection:'row', justifyC
