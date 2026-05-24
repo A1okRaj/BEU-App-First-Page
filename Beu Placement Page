@@ -1,0 +1,407 @@
+// ================================================================
+//  BEU PLACEMENT APP — React Native + Expo Conversion
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/colors.js
+//  │   ├── data/placementData.js
+//  │   ├── components/
+//  │   │   ├── ReadinessCard.js
+//  │   │   ├── StatsRow.js
+//  │   │   ├── LiveBanner.js
+//  │   │   ├── FilterRow.js
+//  │   │   ├── CompanyCard.js
+//  │   │   ├── ApplicationsList.js
+//  │   │   ├── PrepTracker.js
+//  │   │   ├── SalaryChart.js
+//  │   │   ├── TipsCard.js
+//  │   │   ├── CompanyModal.js
+//  │   │   ├── SearchBar.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── ToastMessage.js
+//  │   └── screens/PlacementScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:'#0A0812', bg2:'#0F0C1A',
+  card:'#16132A', card2:'#1E1A35', card3:'#252040',
+  border:'rgba(255,255,255,0.07)', border2:'rgba(255,255,255,0.13)',
+  t1:'#F5F0FF', t2:'rgba(245,240,255,0.6)', t3:'rgba(245,240,255,0.25)',
+  p:'#A78BFA', p2:'#7C3AED',
+  or:'#FF8C42', teal:'#2DD4BF', pink:'#F472B6',
+  gold:'#F59E0B', green:'#34D399', red:'#F87171', blue:'#60A5FA',
+};
+
+
+
+
+// ================================================================
+// FILE: src/data/placementData.js
+// ================================================================
+export const FILTERS   = ['All','Open','Upcoming','Closed','Internship'];
+export const BRANCHES  = ['All Branches','CSE','ECE','ME','CE','EE'];
+export const PKG_RANGE = ['Any Package','3-5 LPA','5-8 LPA','8-12 LPA','12+ LPA'];
+
+export const COMPANIES = [
+  { id:1,  name:'TCS',          logo:'🔵', role:'System Engineer',     pkg:'3.5 LPA',   branch:['CSE','ECE','ME','CE'], status:'Open',     deadline:'30 Apr 2026', cgpa:'6.0', type:'Service',  process:['Online Test','TR Interview','MR Interview','HR Interview'], color:'#60A5FA', bg:'rgba(96,165,250,0.1)',   border:'rgba(96,165,250,0.25)',  desc:"India's largest IT company. Mass recruiter for BEU.", location:'Pan India',            bond:'2 years', openings:50 },
+  { id:2,  name:'Infosys',      logo:'🟣', role:'Systems Engineer',     pkg:'4.5 LPA',   branch:['CSE','ECE'],          status:'Open',     deadline:'2 May 2026',  cgpa:'6.5', type:'Service',  process:['Aptitude Test','Coding Round','HR Interview'],                color:'#A78BFA', bg:'rgba(167,139,250,0.1)', border:'rgba(167,139,250,0.25)', desc:'Global leader in next-gen digital services.',         location:'Pune / Bangalore',     bond:'None',    openings:30 },
+  { id:3,  name:'Wipro',        logo:'🟢', role:'Project Engineer',     pkg:'3.5 LPA',   branch:['CSE','ECE','EE'],     status:'Upcoming', deadline:'10 May 2026', cgpa:'6.0', type:'Service',  process:['NLTH Test','Technical Interview','HR Round'],                 color:'#34D399', bg:'rgba(52,211,153,0.08)',  border:'rgba(52,211,153,0.22)',  desc:'Leading global IT, consulting and business process.',  location:'Multiple Locations',   bond:'None',    openings:40 },
+  { id:4,  name:'Cognizant',    logo:'🔷', role:'Programmer Analyst',   pkg:'4.0 LPA',   branch:['CSE','ECE'],          status:'Open',     deadline:'5 May 2026',  cgpa:'6.5', type:'Service',  process:['GenC Test','Interview','HR Round'],                            color:'#2DD4BF', bg:'rgba(45,212,191,0.08)',  border:'rgba(45,212,191,0.22)',  desc:"One of the world's leading professional services.",    location:'Chennai / Hyderabad',  bond:'None',    openings:25 },
+  { id:5,  name:'Capgemini',    logo:'🔴', role:'Analyst',              pkg:'4.5 LPA',   branch:['CSE','ECE','ME'],     status:'Open',     deadline:'8 May 2026',  cgpa:'6.0', type:'Service',  process:['Game Assessment','Technical Test','HR Interview'],             color:'#F87171', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.22)', desc:'Global leader in consulting and digital transformation.', location:'Multiple Locations',bond:'None',    openings:35 },
+  { id:6,  name:'Tech Mahindra',logo:'🟠', role:'Software Engineer',    pkg:'3.8 LPA',   branch:['CSE','ECE'],          status:'Upcoming', deadline:'15 May 2026', cgpa:'6.0', type:'Service',  process:['Aptitude','Coding','Technical Interview','HR'],               color:'#FF8C42', bg:'rgba(255,140,66,0.08)',  border:'rgba(255,140,66,0.22)',  desc:'Focused on connected world, next-gen technology.',     location:'Pune / Hyderabad',     bond:'None',    openings:20 },
+  { id:7,  name:'Amazon',       logo:'🟡', role:'SDE Intern',           pkg:'60K/Month', branch:['CSE'],                status:'Upcoming', deadline:'20 May 2026', cgpa:'8.0', type:'Product',  process:['Online Coding','2x DSA Rounds','System Design','Bar Raiser'], color:'#F59E0B', bg:'rgba(245,158,11,0.1)',   border:'rgba(245,158,11,0.25)',  desc:"World's largest e-commerce and cloud computing company.", location:'Bangalore / Hyderabad',bond:'None',    openings:5  },
+  { id:8,  name:'BSNL',         logo:'🏛️', role:'JE (Telecom)',         pkg:'5.5 LPA',   branch:['ECE','EE'],           status:'Open',     deadline:'12 May 2026', cgpa:'7.0', type:'Govt/PSU', process:['Written Exam','Interview'],                                    color:'#34D399', bg:'rgba(52,211,153,0.08)',  border:'rgba(52,211,153,0.22)',  desc:"India's largest government telecom company.",          location:'Bihar / Jharkhand',    bond:'None',    openings:15 },
+];
+
+export const MY_APPLICATIONS = [
+  { id:1, company:'TCS',       logo:'🔵', role:'System Engineer',   pkg:'3.5 LPA', date:'18 Apr 2026', status:'Applied',     round:'Written Test Pending', statusColor:'#60A5FA', bg:'rgba(96,165,250,0.12)'  },
+  { id:2, company:'Infosys',   logo:'🟣', role:'Systems Engineer',  pkg:'4.5 LPA', date:'15 Apr 2026', status:'Shortlisted', round:'Interview on 2 May',   statusColor:'#34D399', bg:'rgba(52,211,153,0.12)'  },
+  { id:3, company:'Cognizant', logo:'🔷', role:'Programmer Analyst',pkg:'4.0 LPA', date:'10 Apr 2026', status:'Rejected',    round:'After Written Test',   statusColor:'#F87171', bg:'rgba(248,113,113,0.1)' },
+];
+
+export const PREP_ITEMS = [
+  { ico:'💻', name:'DSA Problems',     done:85,  total:150, color:'#A78BFA', pct:57  },
+  { ico:'🧠', name:'Aptitude',         done:60,  total:100, color:'#FF8C42', pct:60  },
+  { ico:'🗣️', name:'HR Questions',     done:25,  total:50,  color:'#F472B6', pct:50  },
+  { ico:'⚙️', name:'Core CS Subjects', done:70,  total:120, color:'#2DD4BF', pct:58  },
+  { ico:'📝', name:'Resume',           done:1,   total:1,   color:'#34D399', pct:100 },
+  { ico:'🔗', name:'LinkedIn Profile', done:1,   total:1,   color:'#60A5FA', pct:80  },
+];
+
+export const SALARY_DATA = [
+  { company:'Amazon',      pkg:'60K/mo',  bar:100, color:'#F59E0B' },
+  { company:'TCS Digital', pkg:'7.0 LPA', bar:70,  color:'#A78BFA' },
+  { company:'Infosys Sp.', pkg:'6.5 LPA', bar:65,  color:'#7C3AED' },
+  { company:'Capgemini',   pkg:'4.5 LPA', bar:45,  color:'#F87171' },
+  { company:'TCS',         pkg:'3.5 LPA', bar:35,  color:'#60A5FA' },
+  { company:'Wipro',       pkg:'3.5 LPA', bar:35,  color:'#34D399' },
+];
+
+export const READINESS_ITEMS = [
+  { ico:'💻', label:'DSA & Coding',    pct:57,  color:'#A78BFA' },
+  { ico:'🧠', label:'Aptitude',        pct:60,  color:'#FF8C42' },
+  { ico:'📝', label:'Resume Ready',    pct:100, color:'#34D399' },
+  { ico:'🗣️', label:'Communication',   pct:70,  color:'#F472B6' },
+];
+
+export const TIPS = [
+  { ico:'🎯', text:'Start with service companies (TCS, Infosys, Wipro) — they have the most openings and lower cutoffs.' },
+  { ico:'💻', text:'Solve at least 150 LeetCode problems before campus drive. Focus on Arrays, Trees, DP, and Graphs.' },
+  { ico:'📄', text:'Keep your resume to 1 page. Quantify achievements: "Built X that improved Y by Z%"' },
+  { ico:'🏆', text:'CGPA above 7.5 opens PSU doors (BSNL, ONGC, NTPC). Don\'t ignore core subjects.' },
+  { ico:'⚡', text:'Practice mock interviews on Pramp.io and Interviewing.io — BEU placement season starts April.' },
+];
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:10 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ToastMessage.js
+// ================================================================
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function ToastMessage({ msg, color = C.green }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty      = useRef(new Animated.Value(10)).current;
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue:1, duration:250, useNativeDriver:true }),
+      Animated.timing(ty,      { toValue:0, duration:250, useNativeDriver:true }),
+    ]).start();
+  }, [msg]);
+  return (
+    <Animated.View style={[s.toast, { borderColor:color+'40', opacity, transform:[{translateY:ty}] }]}>
+      <Text style={[s.text, { color }]}>{msg}</Text>
+    </Animated.View>
+  );
+}
+const s = StyleSheet.create({
+  toast: {
+    position:'absolute', bottom:110, alignSelf:'center',
+    backgroundColor:C.card, borderWidth:1, borderRadius:14,
+    paddingHorizontal:20, paddingVertical:10, zIndex:999, elevation:10,
+  },
+  text: { fontSize:13, fontWeight:'700' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/SearchBar.js
+// ================================================================
+import React from 'react';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SearchBar({ value, onChange, accent = C.green }) {
+  return (
+    <View style={[s.bar, value.length > 0 && { borderColor: accent + '55' }]}>
+      <Text style={s.ico}>🔍</Text>
+      <TextInput
+        style={s.input} value={value} onChangeText={onChange}
+        placeholder="Search company, role, branch..." placeholderTextColor={C.t3}
+      />
+      {!!value && (
+        <TouchableOpacity onPress={() => onChange('')} hitSlop={{top:8,bottom:8,left:8,right:8}}>
+          <Text style={s.clear}>✕</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+const s = StyleSheet.create({
+  bar: {
+    flexDirection:'row', alignItems:'center', gap:8,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+    borderRadius:12, paddingHorizontal:14, paddingVertical:10, marginTop:12,
+  },
+  ico:   { fontSize:15, color:C.t3 },
+  input: { flex:1, color:C.t1, fontSize:13 },
+  clear: { fontSize:13, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/FilterRow.js
+// ================================================================
+import React from 'react';
+import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function FilterRow({ items, active, onSelect, activeColor = C.green }) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}
+      contentContainerStyle={s.row} style={s.scroll}>
+      {items.map(item => {
+        const on = active === item;
+        return (
+          <TouchableOpacity key={item}
+            style={[s.pill, on && { backgroundColor:activeColor+'22', borderColor:activeColor+'55' }]}
+            onPress={() => onSelect(item)} activeOpacity={0.75}>
+            <Text style={[s.label, on && { color:activeColor }]}>{item}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </ScrollView>
+  );
+}
+const s = StyleSheet.create({
+  scroll: { marginBottom:10 },
+  row:    { flexDirection:'row', gap:7, paddingBottom:4 },
+  pill: {
+    borderRadius:20, paddingHorizontal:14, paddingVertical:7,
+    backgroundColor:C.card2, borderWidth:1, borderColor:C.border2,
+  },
+  label: { fontSize:11, fontWeight:'600', color:C.t2 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/ReadinessCard.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+import { READINESS_ITEMS } from '../data/placementData';
+
+const SIZE = 72; const R = 30; const CIRC = 2 * Math.PI * R;
+const OVERALL_PCT = Math.round(READINESS_ITEMS.reduce((a,i) => a + i.pct, 0) / READINESS_ITEMS.length);
+
+function ReadinessBar({ item }) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(anim, { toValue: item.pct / 100, duration:700, useNativeDriver:false }).start();
+  }, []);
+  const width = anim.interpolate({ inputRange:[0,1], outputRange:['0%','100%'] });
+  return (
+    <View style={s.item}>
+      <Text style={s.itemIco}>{item.ico}</Text>
+      <Text style={s.itemLabel}>{item.label}</Text>
+      <View style={s.itemBarWrap}>
+        <View style={s.itemBarTrack}>
+          <Animated.View style={[s.itemBarFill, { width, backgroundColor:item.color }]} />
+        </View>
+      </View>
+      <Text style={[s.itemPct, { color:item.color }]}>{item.pct}%</Text>
+    </View>
+  );
+}
+
+export default function ReadinessCard() {
+  const dash = CIRC - CIRC * (OVERALL_PCT / 100);
+  return (
+    <LinearGradient colors={['rgba(52,211,153,0.18)','rgba(167,139,250,0.1)']} style={s.card}>
+      <View style={s.topBorder} />
+      <View style={s.topRow}>
+        <View style={s.left}>
+          <Text style={s.eyebrow}>PLACEMENT READINESS</Text>
+          <Text style={s.title}>Profile Score</Text>
+          <Text style={s.sub}>BEU Campus Drive 2026</Text>
+        </View>
+        <View style={s.ringWrap}>
+          <Svg width={SIZE} height={SIZE}>
+            <Circle cx={SIZE/2} cy={SIZE/2} r={R} stroke="rgba(255,255,255,0.07)" strokeWidth={8} fill="none" />
+            <Circle cx={SIZE/2} cy={SIZE/2} r={R} stroke={C.green} strokeWidth={8} fill="none"
+              strokeDasharray={CIRC} strokeDashoffset={dash} strokeLinecap="round"
+              rotation={-90} origin={`${SIZE/2},${SIZE/2}`} />
+          </Svg>
+          <View style={s.ringCenter}>
+            <Text style={s.ringVal}>{OVERALL_PCT}%</Text>
+            <Text style={s.ringLbl}>Score</Text>
+          </View>
+        </View>
+      </View>
+      {READINESS_ITEMS.map((item, i) => <ReadinessBar key={i} item={item} />)}
+    </LinearGradient>
+  );
+}
+
+const s = StyleSheet.create({
+  card: {
+    borderRadius:24, borderWidth:1, borderColor:'rgba(52,211,153,0.22)',
+    padding:20, marginBottom:14, overflow:'hidden',
+  },
+  topBorder: { position:'absolute', top:0, left:0, right:0, height:1, backgroundColor:'rgba(52,211,153,0.6)' },
+  topRow:    { flexDirection:'row', justifyContent:'space-between', alignItems:'flex-start', marginBottom:16 },
+  left:      {},
+  eyebrow:   { fontSize:9, color:'rgba(52,211,153,0.8)', fontWeight:'600', letterSpacing:1.5, textTransform:'uppercase', marginBottom:4 },
+  title:     { fontSize:22, fontWeight:'800', color:C.t1, marginBottom:3 },
+  sub:       { fontSize:11, color:C.t2 },
+  ringWrap:  { width:SIZE, height:SIZE },
+  ringCenter:{ ...StyleSheet.absoluteFillObject, alignItems:'center', justifyContent:'center' },
+  ringVal:   { fontSize:16, fontWeight:'800', color:C.green, lineHeight:18 },
+  ringLbl:   { fontSize:8, color:C.t3 },
+  item:      { flexDirection:'row', alignItems:'center', gap:8, marginBottom:8 },
+  itemIco:   { fontSize:14, width:20 },
+  itemLabel: { fontSize:11, color:C.t2, width:110 },
+  itemBarWrap:{ flex:1 },
+  itemBarTrack:{ height:5, backgroundColor:'rgba(255,255,255,0.08)', borderRadius:99, overflow:'hidden' },
+  itemBarFill: { height:5, borderRadius:99 },
+  itemPct:   { fontSize:10, fontWeight:'700', minWidth:32, textAlign:'right' },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/StatsRow.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+import { COMPANIES, MY_APPLICATIONS } from '../data/placementData';
+
+export default function StatsRow() {
+  const open   = COMPANIES.filter(c => c.status === 'Open').length;
+  const applied = MY_APPLICATIONS.length;
+  const short  = MY_APPLICATIONS.filter(a => a.status === 'Shortlisted').length;
+  const STATS  = [
+    { n:`${COMPANIES.length}`, l:'Companies', c:C.green },
+    { n:`${open}`,             l:'Open',      c:C.gold  },
+    { n:`${applied}`,          l:'Applied',   c:C.p     },
+    { n:`${short}`,            l:'Shortlisted',c:C.teal },
+  ];
+  return (
+    <View style={s.row}>
+      {STATS.map((st, i) => (
+        <View key={i} style={s.box}>
+          <Text style={[s.n, { color:st.c }]}>{st.n}</Text>
+          <Text style={s.l}>{st.l}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+const s = StyleSheet.create({
+  row: { flexDirection:'row', gap:8, marginBottom:14 },
+  box: { flex:1, backgroundColor:C.card, borderRadius:14, borderWidth:1, borderColor:C.border, padding:11, alignItems:'center' },
+  n:   { fontSize:20, fontWeight:'800' },
+  l:   { fontSize:8, color:C.t3, marginTop:2, textTransform:'uppercase', letterSpacing:0.3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/LiveBanner.js
+// ================================================================
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+import { COMPANIES } from '../data/placementData';
+
+export default function LiveBanner({ onPress }) {
+  const pulse = useRef(new Animated.Value(1)).current;
+  const live  = COMPANIES.find(c => c.status === 'Open' && c.type === 'Product') || COMPANIES[0];
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue:0.2, duration:700, useNativeDriver:true }),
+        Animated.timing(pulse, { toValue:1,   duration:700, useNativeDriver:true }),
+      ])
+    ).start();
+  }, []);
+
+  return (
+    <TouchableOpacity onPress={() => onPress(live)} activeOpacity={0.85} style={{ marginBottom:14 }}>
+      <LinearGradient colors={['rgba(245,158,11,0.18)','rgba(255,140,66,0.1)']} style={s.card}>
+        <View style={s.topBorder} />
+        <View style={s.topRow}>
+          <View style={s.livePill}>
+            <Animated.View style={[s.liveDot, { opacity:pulse }]} />
+            <Text style={s.liveText}>LIVE</Text>
+          </View>
+          <Text style={s.deadline}>Closes {live.deadline}</Text>
+        </View>
+        <Text style={s.company}>{live.name}</Text>
+        <Text style={s.role}>{live.role} · {live.type}</Text>
+        <View style={s.chipsRow}>
