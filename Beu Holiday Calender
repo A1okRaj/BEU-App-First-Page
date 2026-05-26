@@ -1,0 +1,348 @@
+// ================================================================
+//  BEU HOLIDAY CALENDAR 2026 — React Native + Expo Conversion
+// ================================================================
+//
+//  📁 FOLDER STRUCTURE
+//  ├── App.js
+//  ├── src/
+//  │   ├── theme/colors.js
+//  │   ├── data/holidayData.js
+//  │   ├── components/
+//  │   │   ├── BeuBanner.js
+//  │   │   ├── CalendarGrid.js
+//  │   │   ├── LegendRow.js
+//  │   │   ├── UpcomingList.js
+//  │   │   ├── AllHolidaysList.js
+//  │   │   ├── HolidayModal.js
+//  │   │   ├── SectionHeader.js
+//  │   │   └── MonthNav.js
+//  │   └── screens/HolidayScreen.js
+//
+// ================================================================
+
+
+
+
+// ================================================================
+// FILE: src/theme/colors.js
+// ================================================================
+export const C = {
+  bg:'#0A0812', bg2:'#0F0C1A',
+  card:'#16132A', card2:'#1E1A35', card3:'#252040',
+  border:'rgba(255,255,255,0.07)', border2:'rgba(255,255,255,0.13)',
+  t1:'#F5F0FF', t2:'rgba(245,240,255,0.6)', t3:'rgba(245,240,255,0.25)',
+  p:'#A78BFA', p2:'#7C3AED',
+  or:'#FF8C42', teal:'#2DD4BF', pink:'#F472B6',
+  gold:'#F59E0B', green:'#34D399', red:'#F87171', blue:'#60A5FA',
+};
+
+export const TYPE_COLORS = {
+  national:     '#F87171',
+  festival:     '#F59E0B',
+  religious:    '#A78BFA',
+  state:        '#34D399',
+  'long-holiday':'#2DD4BF',
+};
+
+export const TYPE_BG = {
+  national:      'rgba(248,113,113,0.14)',
+  festival:      'rgba(245,158,11,0.13)',
+  religious:     'rgba(167,139,250,0.13)',
+  state:         'rgba(52,211,153,0.12)',
+  'long-holiday':'rgba(45,212,191,0.12)',
+};
+
+export const TYPE_BORDER = {
+  national:      'rgba(248,113,113,0.35)',
+  festival:      'rgba(245,158,11,0.32)',
+  religious:     'rgba(167,139,250,0.28)',
+  state:         'rgba(52,211,153,0.3)',
+  'long-holiday':'rgba(45,212,191,0.3)',
+};
+
+export const TYPE_LABELS = {
+  national:      'National Holiday',
+  festival:      'Festival',
+  religious:     'Religious',
+  state:         'State Holiday',
+  'long-holiday':'Long Vacation',
+};
+
+export const MONTHS    = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+export const MONTHS_HI = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितम्बर','अक्टूबर','नवम्बर','दिसम्बर'];
+export const DAY_HEADS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+
+
+
+// ================================================================
+// FILE: src/data/holidayData.js
+// ================================================================
+export const HOLIDAYS = [
+  { id:1,  name:'नवर्ष आरम्भ',             nameEn:'New Year',                    date:'2026-01-01', days:1,  type:'national',      icon:'🎉', color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'गुरुवार',             desc:'नया साल 2026 का पहला दिन। Bihar Engineering University में अवकाश।' },
+  { id:2,  name:'मकर संक्रान्ति',           nameEn:'Makar Sankranti',             date:'2026-01-14', days:1,  type:'festival',      icon:'🪁', color:'#F59E0B', bg:'rgba(245,158,11,0.12)',  border:'rgba(245,158,11,0.28)',  day:'बुधवार',              desc:'मकर संक्रांति — सूर्य का मकर राशि में प्रवेश। उत्तरायण पर्व।' },
+  { id:3,  name:'बसंत पंचमी / सरस्वती पूजा',nameEn:'Basant Panchami',             date:'2026-01-23', days:1,  type:'festival',      icon:'🌸', color:'#F472B6', bg:'rgba(244,114,182,0.12)', border:'rgba(244,114,182,0.28)', day:'शुक्रवार',            desc:'बसंत पंचमी — माँ सरस्वती की पूजा का दिन। विद्यार्थियों के लिए विशेष पर्व।' },
+  { id:4,  name:'संत रविदास जयंती',         nameEn:'Sant Ravidas Jayanti',        date:'2026-02-01', days:1,  type:'state',         icon:'🙏', color:'#34D399', bg:'rgba(52,211,153,0.1)',   border:'rgba(52,211,153,0.25)',  day:'रविवार',              desc:'संत रविदास जयंती — महान संत और समाज सुधारक की जयंती।' },
+  { id:5,  name:'शब-ए-बरात',                nameEn:'Shab-e-Barat',               date:'2026-02-04', days:1,  type:'religious',     icon:'🌙', color:'#A78BFA', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.28)', day:'बुधवार',              desc:'शब-ए-बरात — इस्लामिक पर्व। क्षमा और दुआ की रात।' },
+  { id:6,  name:'महाशिवरात्रि',             nameEn:'Mahashivratri',              date:'2026-02-15', days:1,  type:'festival',      icon:'🕉️',color:'#F59E0B', bg:'rgba(245,158,11,0.12)',  border:'rgba(245,158,11,0.28)',  day:'रविवार',              desc:'महाशिवरात्रि — भगवान शिव की महान रात्रि। उपवास और पूजा का पर्व।' },
+  { id:7,  name:'होलिकादहन / होली',          nameEn:'Holi',                       date:'2026-03-02', days:3,  type:'festival',      icon:'🎨', color:'#FF8C42', bg:'rgba(255,140,66,0.12)',  border:'rgba(255,140,66,0.28)',  day:'सोमवार से बुधवार',   desc:'होली — रंगों का त्योहार। 3 दिन का अवकाश (2 मार्च से 4 मार्च तक)।' },
+  { id:8,  name:'ईद-उल-फितर (ईद)',          nameEn:'Eid ul-Fitr',                date:'2026-03-21', days:1,  type:'religious',     icon:'🌙', color:'#A78BFA', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.28)', day:'शनिवार',              desc:'ईद-उल-फितर — रमज़ान के बाद मनाया जाने वाला इस्लामिक पर्व।' },
+  { id:9,  name:'बिहार दिवस',               nameEn:'Bihar Diwas',                date:'2026-03-22', days:1,  type:'state',         icon:'🏛️',color:'#34D399', bg:'rgba(52,211,153,0.1)',   border:'rgba(52,211,153,0.25)',  day:'रविवार',              desc:'बिहार दिवस — 22 मार्च 1912 को बिहार प्रांत की स्थापना हुई थी।' },
+  { id:10, name:'सम्राट अशोक जयंती',         nameEn:'Samrat Ashoka Jayanti',      date:'2026-03-26', days:1,  type:'state',         icon:'⚜️', color:'#34D399', bg:'rgba(52,211,153,0.1)',   border:'rgba(52,211,153,0.25)',  day:'गुरुवार',             desc:'सम्राट अशोक जयंती — महान मौर्य सम्राट अशोक की जयंती।' },
+  { id:11, name:'रामनवमी',                  nameEn:'Ram Navami',                 date:'2026-03-27', days:1,  type:'festival',      icon:'🏹', color:'#F59E0B', bg:'rgba(245,158,11,0.12)',  border:'rgba(245,158,11,0.28)',  day:'शुक्रवार',            desc:'रामनवमी — भगवान श्री राम का जन्मदिन।' },
+  { id:12, name:'महावीर जयंती',             nameEn:'Mahavir Jayanti',            date:'2026-03-31', days:1,  type:'national',      icon:'☯️', color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'मंगलवार',             desc:'महावीर जयंती — जैन धर्म के 24वें तीर्थंकर भगवान महावीर की जयंती।' },
+  { id:13, name:'गुड फ्राइडे',              nameEn:'Good Friday',                date:'2026-04-03', days:1,  type:'national',      icon:'✝️', color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'शुक्रवार',            desc:'गुड फ्राइडे — ईसा मसीह के बलिदान की स्मृति में राष्ट्रीय अवकाश।' },
+  { id:14, name:'डॉ भीम राव अंबेडकर जयंती', nameEn:'Ambedkar Jayanti',           date:'2026-04-14', days:1,  type:'national',      icon:'⚖️', color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'मंगलवार',             desc:'अंबेडकर जयंती — भारत के संविधान निर्माता डॉ. भीमराव अंबेडकर की जयंती।' },
+  { id:15, name:'वीर कुंवर सिंह जयंती',     nameEn:'Veer Kunwar Singh Jayanti',  date:'2026-04-23', days:1,  type:'state',         icon:'⚔️', color:'#34D399', bg:'rgba(52,211,153,0.1)',   border:'rgba(52,211,153,0.25)',  day:'गुरुवार',             desc:'वीर कुंवर सिंह जयंती — 1857 के स्वतंत्रता संग्राम के महान योद्धा।' },
+  { id:16, name:'जानकी नवमी',               nameEn:'Janaki Navami',              date:'2026-04-25', days:1,  type:'festival',      icon:'🪔', color:'#F472B6', bg:'rgba(244,114,182,0.12)', border:'rgba(244,114,182,0.28)', day:'शनिवार',              desc:'जानकी नवमी — माता सीता के जन्म का पर्व।' },
+  { id:17, name:'मई दिवस / बुद्ध पूर्णिमा', nameEn:'Labour Day / Buddha Purnima',date:'2026-05-01', days:1,  type:'national',      icon:'🔨', color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'शुक्रवार',            desc:'मजदूर दिवस और बुद्ध पूर्णिमा — राष्ट्रीय अवकाश।' },
+  { id:18, name:'ईद-उल-जोहा (बकरीद)',        nameEn:'Eid ul-Adha (Bakrid)',       date:'2026-05-28', days:1,  type:'religious',     icon:'🐑', color:'#A78BFA', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.28)', day:'गुरुवार',             desc:'ईद-उल-अजहा (बकरीद) — इस्लाम का प्रमुख त्योहार।' },
+  { id:19, name:'ग्रीष्मावकाश',             nameEn:'Summer Vacation',            date:'2026-06-01', days:30, type:'long-holiday',  icon:'☀️', color:'#2DD4BF', bg:'rgba(45,212,191,0.1)',   border:'rgba(45,212,191,0.25)',  day:'1 जून – 30 जून',     desc:'ग्रीष्मावकाश — 1 जून से 30 जून तक। 26+4 दिन (रविवार सहित)।' },
+  { id:20, name:'चेहल्लुम',                 nameEn:'Chehlum',                    date:'2026-08-04', days:1,  type:'religious',     icon:'🌙', color:'#A78BFA', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.28)', day:'मंगलवार',             desc:'चेहल्लुम — हजरत इमाम हुसैन की शहादत के 40वें दिन का पर्व।' },
+  { id:21, name:'ईद-ए-मिलाद',              nameEn:'Eid-e-Milad',               date:'2026-08-26', days:1,  type:'religious',     icon:'🌙', color:'#A78BFA', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.28)', day:'बुधवार',              desc:'ईद-ए-मिलाद-उन-नबी — पैगंबर हजरत मोहम्मद साहब का जन्मदिन।' },
+  { id:22, name:'रक्षाबंधन',                nameEn:'Raksha Bandhan',             date:'2026-08-28', days:1,  type:'festival',      icon:'🎀', color:'#F472B6', bg:'rgba(244,114,182,0.12)', border:'rgba(244,114,182,0.28)', day:'शुक्रवार',            desc:'रक्षाबंधन — भाई-बहन के प्रेम का पर्व।' },
+  { id:23, name:'कृष्ण जन्माष्टमी',         nameEn:'Janmashtami',                date:'2026-09-04', days:1,  type:'festival',      icon:'🦚', color:'#F59E0B', bg:'rgba(245,158,11,0.12)',  border:'rgba(245,158,11,0.28)',  day:'शुक्रवार',            desc:'कृष्ण जन्माष्टमी — भगवान श्री कृष्ण का जन्मदिन।' },
+  { id:24, name:'महात्मा गाँधी जयंती',       nameEn:'Gandhi Jayanti',             date:'2026-10-02', days:1,  type:'national',      icon:'🇮🇳',color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'शुक्रवार',            desc:'गांधी जयंती — राष्ट्रपिता महात्मा गांधी की जयंती।' },
+  { id:25, name:'दुर्गा पूजा',              nameEn:'Durga Puja',                 date:'2026-10-17', days:4,  type:'festival',      icon:'🪔', color:'#FF8C42', bg:'rgba(255,140,66,0.12)',  border:'rgba(255,140,66,0.28)',  day:'17–20 अक्टूबर',      desc:'दुर्गा पूजा / दशहरा — माँ दुर्गा की पूजा। 4 दिन का अवकाश।' },
+  { id:26, name:'दीपावली / छठ पूजा',        nameEn:'Diwali / Chhath Puja',       date:'2026-11-08', days:9,  type:'festival',      icon:'✨', color:'#F59E0B', bg:'rgba(245,158,11,0.12)',  border:'rgba(245,158,11,0.28)',  day:'8–16 नवम्बर',        desc:'दीपावली, चित्रगुप्त पूजा, भाई दूज और छठ पूजा — 9 दिन का अवकाश।' },
+  { id:27, name:'गुरुनानक जयंती',           nameEn:'Guru Nanak Jayanti',         date:'2026-11-24', days:1,  type:'national',      icon:'☬', color:'#F87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.28)', day:'मंगलवार',             desc:'गुरुनानक जयंती — सिख धर्म के संस्थापक गुरु नानक देव जी की जयंती।' },
+  { id:28, name:'क्रिसमस / शीतकालीन अवकाश', nameEn:'Christmas / Winter Vacation', date:'2026-12-25', days:7,  type:'long-holiday',  icon:'🎄', color:'#2DD4BF', bg:'rgba(45,212,191,0.1)',   border:'rgba(45,212,191,0.25)',  day:'25–31 दिसम्बर',      desc:'क्रिसमस और शीतकालीन अवकाश — 25 से 31 दिसम्बर। 7 दिन।' },
+];
+
+export function getHolidaysForDate(dateStr) {
+  return HOLIDAYS.filter(h => {
+    const hDate = new Date(h.date);
+    const check = new Date(dateStr);
+    if (h.days > 1) {
+      const end = new Date(hDate);
+      end.setDate(end.getDate() + h.days - 1);
+      return check >= hDate && check <= end;
+    }
+    return h.date === dateStr;
+  });
+}
+
+export function getDayType(year, month, day) {
+  const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  const dow     = new Date(dateStr).getDay();
+  const holidays = getHolidaysForDate(dateStr);
+  if (holidays.length > 0) return holidays[0].type;
+  if (dow === 0) return 'sunday';
+  if (dow === 6) return 'saturday';
+  return null;
+}
+
+export function getUpcomingHolidays(n = 5) {
+  const today = new Date();
+  return HOLIDAYS
+    .filter(h => new Date(h.date) >= today)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(0, n);
+}
+
+export function daysUntil(dateStr) {
+  const diff = new Date(dateStr) - new Date();
+  return Math.max(0, Math.ceil(diff / 86400000));
+}
+
+
+
+
+// ================================================================
+// FILE: src/components/SectionHeader.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { C } from '../theme/colors';
+
+export default function SectionHeader({ title, accent = C.p, right }) {
+  return (
+    <View style={s.row}>
+      <View style={s.left}>
+        <View style={[s.bar, { backgroundColor: accent }]} />
+        <Text style={s.title}>{title}</Text>
+      </View>
+      {right && <Text style={s.right}>{right}</Text>}
+    </View>
+  );
+}
+const s = StyleSheet.create({
+  row:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:10 },
+  left:  { flexDirection:'row', alignItems:'center', gap:8 },
+  bar:   { width:4, height:18, borderRadius:2 },
+  title: { fontSize:15, fontWeight:'700', color:C.t1 },
+  right: { fontSize:11, color:C.t3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/BeuBanner.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C } from '../theme/colors';
+import { HOLIDAYS } from '../data/holidayData';
+
+export default function BeuBanner() {
+  const totalDays = HOLIDAYS.reduce((a, h) => a + h.days, 0);
+  const STATS = [
+    { n:`${HOLIDAYS.length}`, l:'Holidays',  c:C.gold  },
+    { n:`${totalDays}`,       l:'Days Off',  c:C.green },
+    { n:'2026',               l:'Session',   c:C.p     },
+  ];
+  return (
+    <LinearGradient
+      colors={['rgba(245,158,11,0.2)','rgba(255,140,66,0.1)']}
+      style={s.card}
+    >
+      <View style={s.topBorder} />
+      <Text style={s.logo}>🎓</Text>
+      <Text style={s.title}>Bihar Engineering University</Text>
+      <Text style={s.sub}>Academic Calendar 2026 · Official Holiday List</Text>
+      <View style={s.statsRow}>
+        {STATS.map((st, i) => (
+          <View key={i} style={s.statBox}>
+            <Text style={[s.statN, { color:st.c }]}>{st.n}</Text>
+            <Text style={s.statL}>{st.l}</Text>
+          </View>
+        ))}
+      </View>
+    </LinearGradient>
+  );
+}
+const s = StyleSheet.create({
+  card: {
+    borderRadius:20, borderWidth:1, borderColor:'rgba(245,158,11,0.25)',
+    padding:18, marginBottom:14, alignItems:'center', overflow:'hidden',
+  },
+  topBorder: { position:'absolute', top:0, left:0, right:0, height:1, backgroundColor:'rgba(245,158,11,0.6)' },
+  logo:      { fontSize:36, marginBottom:6 },
+  title:     { fontSize:14, fontWeight:'800', color:C.gold, marginBottom:2, letterSpacing:0.5 },
+  sub:       { fontSize:10, color:C.t2, marginBottom:14 },
+  statsRow:  { flexDirection:'row', gap:8, width:'100%' },
+  statBox: {
+    flex:1, backgroundColor:'rgba(0,0,0,0.25)', borderRadius:10,
+    padding:8, alignItems:'center', borderWidth:1, borderColor:'rgba(255,255,255,0.06)',
+  },
+  statN:    { fontSize:18, fontWeight:'800' },
+  statL:    { fontSize:8, color:C.t3, marginTop:1, textTransform:'uppercase', letterSpacing:0.3 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/MonthNav.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { C, MONTHS, MONTHS_HI } from '../theme/colors';
+
+export default function MonthNav({ year, month, onPrev, onNext }) {
+  return (
+    <View style={s.row}>
+      <TouchableOpacity style={s.btn} onPress={onPrev} activeOpacity={0.75}>
+        <Text style={s.btnText}>‹</Text>
+      </TouchableOpacity>
+      <View style={s.center}>
+        <Text style={s.monthName}>{MONTHS[month]} {year}</Text>
+        <Text style={s.monthHi}>{MONTHS_HI[month]}</Text>
+      </View>
+      <TouchableOpacity style={s.btn} onPress={onNext} activeOpacity={0.75}>
+        <Text style={s.btnText}>›</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+const s = StyleSheet.create({
+  row:       { flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:14 },
+  btn:       { width:38, height:38, borderRadius:11, backgroundColor:C.card2, borderWidth:1, borderColor:C.border2, alignItems:'center', justifyContent:'center' },
+  btnText:   { fontSize:20, color:C.t1, fontWeight:'700' },
+  center:    { alignItems:'center' },
+  monthName: { fontSize:20, fontWeight:'800', color:C.t1 },
+  monthHi:   { fontSize:11, color:C.t3, marginTop:1 },
+});
+
+
+
+
+// ================================================================
+// FILE: src/components/CalendarGrid.js
+// ================================================================
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { C, DAY_HEADS, TYPE_COLORS, TYPE_BG, TYPE_BORDER } from '../theme/colors';
+import { getHolidaysForDate, getDayType } from '../data/holidayData';
+
+const DAY_HEAD_COLORS = ['#F87171', C.t3, C.t3, C.t3, C.t3, C.t3, '#A78BFA'];
+
+export default function CalendarGrid({ year, month, onDayPress }) {
+  const daysInMonth  = new Date(year, month + 1, 0).getDate();
+  const firstDay     = new Date(year, month, 1).getDay();
+  const today        = new Date();
+
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  // pad to full rows
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const isToday = (d) =>
+    d && year === today.getFullYear() && month === today.getMonth() && d === today.getDate();
+
+  return (
+    <View style={s.card}>
+      {/* HEADERS */}
+      <View style={s.headRow}>
+        {DAY_HEADS.map((dh, i) => (
+          <View key={i} style={s.headCell}>
+            <Text style={[s.headText, { color: DAY_HEAD_COLORS[i] }]}>{dh}</Text>
+          </View>
+        ))}
+      </View>
+      {/* GRID */}
+      <View style={s.grid}>
+        {cells.map((day, i) => {
+          if (!day) return <View key={`e-${i}`} style={s.cell} />;
+          const dateStr  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+          const dayType  = getDayType(year, month, day);
+          const isT      = isToday(day);
+          const tc       = dayType && TYPE_COLORS[dayType];
+          const tbg      = dayType && TYPE_BG[dayType];
+          const tbr      = dayType && TYPE_BORDER[dayType];
+          const holidays = getHolidaysForDate(dateStr);
+
+          return (
+            <TouchableOpacity
+              key={day}
+              style={[
+                s.cell,
+                tbg  && { backgroundColor: tbg },
+                tbr  && { borderColor: tbr, borderWidth: 1 },
+                isT  && s.cellToday,
+              ]}
+              onPress={() => day && onDayPress(day, dateStr, holidays)}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                s.dayNum,
+                tc  && { color: tc, fontWeight:'800' },
+                isT && { color: C.p, fontWeight:'800' },
+              ]}>{day}</Text>
+              {holidays.length > 0 && (
+                <View style={[s.dot, { backgroundColor: holidays[0].color }]} />
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  card:     { backgroundColor:C.card, borderRadiu
